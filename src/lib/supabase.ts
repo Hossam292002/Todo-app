@@ -20,14 +20,27 @@ export type Project = {
 };
 
 export type CategoryColorKey =
-  | 'amber'
-  | 'blue'
-  | 'emerald'
-  | 'violet'
-  | 'rose'
-  | 'cyan'
+  | 'slate'
+  | 'gray'
+  | 'zinc'
+  | 'stone'
+  | 'neutral'
+  | 'red'
   | 'orange'
-  | 'fuchsia';
+  | 'amber'
+  | 'yellow'
+  | 'lime'
+  | 'green'
+  | 'emerald'
+  | 'teal'
+  | 'cyan'
+  | 'sky'
+  | 'blue'
+  | 'indigo'
+  | 'violet'
+  | 'purple'
+  | 'fuchsia'
+  | 'pink';
 
 export type Category = {
   id: string;

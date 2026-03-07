@@ -18,14 +18,27 @@ export const CATEGORY_COLOR_OPTIONS: {
   border: string;
   accent: string;
 }[] = [
-  { key: 'amber', bg: 'bg-amber-100', border: 'border-amber-300', accent: 'text-amber-800' },
-  { key: 'blue', bg: 'bg-blue-100', border: 'border-blue-300', accent: 'text-blue-800' },
-  { key: 'emerald', bg: 'bg-emerald-100', border: 'border-emerald-300', accent: 'text-emerald-800' },
-  { key: 'violet', bg: 'bg-violet-100', border: 'border-violet-300', accent: 'text-violet-800' },
-  { key: 'rose', bg: 'bg-rose-100', border: 'border-rose-300', accent: 'text-rose-800' },
-  { key: 'cyan', bg: 'bg-cyan-100', border: 'border-cyan-300', accent: 'text-cyan-800' },
+  { key: 'slate', bg: 'bg-slate-100', border: 'border-slate-300', accent: 'text-slate-800' },
+  { key: 'gray', bg: 'bg-gray-100', border: 'border-gray-300', accent: 'text-gray-800' },
+  { key: 'zinc', bg: 'bg-zinc-100', border: 'border-zinc-300', accent: 'text-zinc-800' },
+  { key: 'stone', bg: 'bg-stone-100', border: 'border-stone-300', accent: 'text-stone-800' },
+  { key: 'neutral', bg: 'bg-neutral-100', border: 'border-neutral-300', accent: 'text-neutral-800' },
+  { key: 'red', bg: 'bg-red-100', border: 'border-red-300', accent: 'text-red-800' },
   { key: 'orange', bg: 'bg-orange-100', border: 'border-orange-300', accent: 'text-orange-800' },
+  { key: 'amber', bg: 'bg-amber-100', border: 'border-amber-300', accent: 'text-amber-800' },
+  { key: 'yellow', bg: 'bg-yellow-100', border: 'border-yellow-300', accent: 'text-yellow-800' },
+  { key: 'lime', bg: 'bg-lime-100', border: 'border-lime-300', accent: 'text-lime-800' },
+  { key: 'green', bg: 'bg-green-100', border: 'border-green-300', accent: 'text-green-800' },
+  { key: 'emerald', bg: 'bg-emerald-100', border: 'border-emerald-300', accent: 'text-emerald-800' },
+  { key: 'teal', bg: 'bg-teal-100', border: 'border-teal-300', accent: 'text-teal-800' },
+  { key: 'cyan', bg: 'bg-cyan-100', border: 'border-cyan-300', accent: 'text-cyan-800' },
+  { key: 'sky', bg: 'bg-sky-100', border: 'border-sky-300', accent: 'text-sky-800' },
+  { key: 'blue', bg: 'bg-blue-100', border: 'border-blue-300', accent: 'text-blue-800' },
+  { key: 'indigo', bg: 'bg-indigo-100', border: 'border-indigo-300', accent: 'text-indigo-800' },
+  { key: 'violet', bg: 'bg-violet-100', border: 'border-violet-300', accent: 'text-violet-800' },
+  { key: 'purple', bg: 'bg-purple-100', border: 'border-purple-300', accent: 'text-purple-800' },
   { key: 'fuchsia', bg: 'bg-fuchsia-100', border: 'border-fuchsia-300', accent: 'text-fuchsia-800' },
+  { key: 'pink', bg: 'bg-pink-100', border: 'border-pink-300', accent: 'text-pink-800' },
 ];
 
 const COLOR_BY_KEY = Object.fromEntries(CATEGORY_COLOR_OPTIONS.map((c) => [c.key, c]));
@@ -39,7 +52,7 @@ export function getTaskColorByKey(key: CategoryColorKey | undefined): {
   border: string;
   accent: string;
 } {
-  if (!key || !COLOR_BY_KEY[key]) return CATEGORY_COLOR_OPTIONS[2]; // default emerald
+  if (!key || !COLOR_BY_KEY[key]) return COLOR_BY_KEY['emerald'] ?? CATEGORY_COLOR_OPTIONS[0];
   const c = COLOR_BY_KEY[key];
   return { bg: c.bg, border: c.border, accent: c.accent };
 }
