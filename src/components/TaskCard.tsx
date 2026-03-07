@@ -1,6 +1,7 @@
 'use client';
 
 import { memo, useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { Task } from '@/lib/supabase';
@@ -102,6 +103,7 @@ type TaskCardProps = {
 export const TaskCard = memo(function TaskCard({ task, categoryId, categoryColor }: TaskCardProps) {
   const [showMoveModal, setShowMoveModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
   const deleteTask = useTodoStore((s) => s.deleteTask);
   const relativeTime = useRelativeTime(task.created_at);
   const findTaskApi = useFindTask();
@@ -151,12 +153,22 @@ export const TaskCard = memo(function TaskCard({ task, categoryId, categoryColor
           {task.description && (
             <div className="mt-1 text-sm text-slate-800 line-clamp-2">{task.description}</div>
           )}
-          {(task.assigned_to || task.project_id || task.sprint_start) && (
-            <div className="mt-2 flex flex-wrap gap-1 text-xs text-slate-700">
+          {(task.assigned_to || task.project_id || task.sprint_start || task.attachment_url) && (
+            <div className="mt-2 flex flex-wrap items-center gap-1 text-xs text-slate-700">
               {task.assigned_to && <span className="rounded bg-slate-200/80 px-1.5 py-0.5 text-slate-800">{task.assigned_to}</span>}
               {task.project_id && <span className="rounded bg-slate-200/80 px-1.5 py-0.5 text-slate-800">{task.project_id}</span>}
               {task.sprint_start && (
                 <span className="rounded bg-slate-200/80 px-1.5 py-0.5 text-slate-800" title="Sprint">Sprint: {formatSprintRange(task.sprint_start)}</span>
+              )}
+              {task.attachment_url && (
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); setShowImageModal(true); }}
+                  className="flex items-center gap-0.5 rounded bg-slate-200/80 px-1.5 py-0.5 text-slate-800 hover:bg-slate-300/80"
+                  title="View attachment"
+                >
+                  <span aria-hidden>📎</span> Attachment
+                </button>
               )}
             </div>
           )}
@@ -203,6 +215,33 @@ export const TaskCard = memo(function TaskCard({ task, categoryId, categoryColor
       </div>
       <TaskUpdateModal isOpen={showUpdateModal} onClose={() => setShowUpdateModal(false)} task={task} />
       <TaskEditModal isOpen={showMoveModal} onClose={() => setShowMoveModal(false)} task={task} />
+      {showImageModal && task.attachment_url && typeof document !== 'undefined' && createPortal(
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="View attachment"
+          className="fixed inset-0 z-[99999] flex items-center justify-center bg-black"
+          style={{ width: '100vw', height: '100vh', left: 0, top: 0, right: 0, bottom: 0 }}
+          onClick={() => setShowImageModal(false)}
+        >
+          <img
+            src={task.attachment_url}
+            alt="Task attachment"
+            className="max-h-[100vh] max-w-[100vw] w-auto h-auto object-contain"
+            style={{ maxWidth: '100vw', maxHeight: '100vh' }}
+            onClick={(e) => e.stopPropagation()}
+          />
+          <button
+            type="button"
+            onClick={() => setShowImageModal(false)}
+            className="absolute right-4 top-4 rounded bg-black/60 px-3 py-2 text-sm font-medium text-white hover:bg-black/80"
+            aria-label="Close"
+          >
+            Close
+          </button>
+        </div>,
+        document.body
+      )}
     </>
   );
 });

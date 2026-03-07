@@ -1,9 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useTodoStore } from '@/store/useTodoStore';
 import { SprintCalendar } from './SprintCalendar';
+
+const MAX_PASTE_IMAGE_BYTES = 2 * 1024 * 1024; // 2MB
 
 type TaskFormModalProps = {
   isOpen: boolean;
@@ -17,11 +19,23 @@ export function TaskFormModal({ isOpen, onClose, categoryId }: TaskFormModalProp
   const [assignedTo, setAssignedTo] = useState('');
   const [projectId, setProjectId] = useState('');
   const [sprintStart, setSprintStart] = useState<string | null>(null);
+  const [pastedImage, setPastedImage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const addTask = useTodoStore((s) => s.addTask);
   const getNextTaskId = useTodoStore((s) => s.getNextTaskId);
   const projects = useTodoStore((s) => s.projects);
+
+  const handlePaste = useCallback((e: ClipboardEvent) => {
+    const item = Array.from(e.clipboardData?.items ?? []).find((i) => i.type.startsWith('image/'));
+    if (!item) return;
+    e.preventDefault();
+    const blob = item.getAsFile();
+    if (!blob || blob.size > MAX_PASTE_IMAGE_BYTES) return;
+    const reader = new FileReader();
+    reader.onload = () => setPastedImage(reader.result as string);
+    reader.readAsDataURL(blob);
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -30,9 +44,16 @@ export function TaskFormModal({ isOpen, onClose, categoryId }: TaskFormModalProp
       setAssignedTo('');
       setProjectId('');
       setSprintStart(null);
+      setPastedImage(null);
       setError(null);
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    document.addEventListener('paste', handlePaste);
+    return () => document.removeEventListener('paste', handlePaste);
+  }, [isOpen, handlePaste]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,6 +69,7 @@ export function TaskFormModal({ isOpen, onClose, categoryId }: TaskFormModalProp
         assigned_to: assignedTo.trim() || undefined,
         project_id: projectId || undefined,
         sprint_start: sprintStart || undefined,
+        attachment_url: pastedImage || undefined,
         category_id: categoryId,
         position_x: 0,
         position_y: 0,
@@ -135,6 +157,24 @@ export function TaskFormModal({ isOpen, onClose, categoryId }: TaskFormModalProp
               <label className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-200">Sprint</label>
               <p className="mb-1 text-xs text-slate-500 dark:text-slate-400">Select a day to choose its week (Mon–Sun)</p>
               <SprintCalendar value={sprintStart} onChange={setSprintStart} />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-200">Image (paste)</label>
+              <p className="mb-1 text-xs text-slate-500 dark:text-slate-400">Paste an image with Ctrl+V / Cmd+V (e.g. screenshot)</p>
+              {pastedImage ? (
+                <div className="relative inline-block">
+                  <img src={pastedImage} alt="Pasted" className="max-h-24 rounded-lg border border-slate-300 dark:border-slate-500 object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => setPastedImage(null)}
+                    className="absolute -right-1 -top-1 rounded-full bg-slate-700 px-1.5 py-0.5 text-xs text-white hover:bg-slate-600 dark:bg-slate-600 dark:hover:bg-slate-500"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ) : (
+                <span className="text-xs text-slate-500 dark:text-slate-400">No image pasted yet</span>
+              )}
             </div>
           </div>
           <div className="shrink-0 flex gap-2 border-t border-slate-200 p-4 dark:border-slate-600">

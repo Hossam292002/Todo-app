@@ -66,6 +66,8 @@ export type Task = {
   position_y: number;
   /** Monday of the sprint week (ISO date YYYY-MM-DD); full week is Mon–Sun */
   sprint_start?: string | null;
+  /** Pasted or uploaded image (data URL or URL) */
+  attachment_url?: string | null;
   user_id?: string;
   created_at?: string;
   updated_at?: string;

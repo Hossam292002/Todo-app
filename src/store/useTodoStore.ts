@@ -46,7 +46,7 @@ type TodoStore = {
   // Actions - Tasks
   addTask: (task: Omit<Task, 'id' | 'created_at' | 'updated_at' | 'display_id'>) => Promise<void>;
   deleteTask: (taskId: number) => Promise<void>;
-  updateTask: (taskId: number, updates: { title?: string; description?: string; assigned_to?: string; project_id?: string; sprint_start?: string | null }) => Promise<void>;
+  updateTask: (taskId: number, updates: { title?: string; description?: string; assigned_to?: string; project_id?: string; sprint_start?: string | null; attachment_url?: string | null }) => Promise<void>;
   updateTaskPosition: (taskId: number, categoryId: string, position_x: number, position_y: number) => Promise<void>;
   updateTaskCategory: (taskId: number, newCategoryId: string) => Promise<void>;
   reorderTasksInCategory: (categoryId: string, taskIds: number[]) => Promise<void>;
@@ -204,8 +204,8 @@ export const useTodoStore = create<TodoStore>((set, get) => ({
   },
 
   updateTask: async (taskId, updates) => {
-    const { title, description, assigned_to, project_id, sprint_start } = updates;
-    const payload: { title?: string; description?: string; assigned_to?: string; project_id?: string; sprint_start?: string | null; updated_at: string } = {
+    const { title, description, assigned_to, project_id, sprint_start, attachment_url } = updates;
+    const payload: { title?: string; description?: string; assigned_to?: string; project_id?: string; sprint_start?: string | null; attachment_url?: string | null; updated_at: string } = {
       updated_at: new Date().toISOString(),
     };
     if (title !== undefined) payload.title = title;
@@ -213,6 +213,7 @@ export const useTodoStore = create<TodoStore>((set, get) => ({
     if (assigned_to !== undefined) payload.assigned_to = assigned_to;
     if (project_id !== undefined) payload.project_id = project_id;
     if (sprint_start !== undefined) payload.sprint_start = sprint_start;
+    if (attachment_url !== undefined) payload.attachment_url = attachment_url;
     await supabase.from('tasks').update(payload).eq('task_id', taskId);
     set((s) => ({
       tasks: s.tasks.map((t) =>
