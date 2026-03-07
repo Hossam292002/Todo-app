@@ -22,14 +22,14 @@ export default function Home() {
 
   if (checking) {
     return (
-      <main className="flex h-screen flex-col items-center justify-center bg-slate-200 dark:bg-slate-900">
+      <main className="flex h-screen flex-col items-center justify-center bg-slate-200 dark:bg-black">
         <p className="text-slate-800 dark:text-slate-200">Loading…</p>
       </main>
     );
   }
 
   return (
-    <main className="flex h-screen flex-col bg-slate-200 dark:bg-slate-900">
+    <main className="flex h-screen flex-col bg-slate-200 dark:bg-black">
       <div className="flex-1 overflow-hidden">
         <FindTaskProvider>
           <TodoCanvas />

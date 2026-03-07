@@ -71,8 +71,11 @@ export function Toolbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [open]);
 
+  const inputClass = 'h-10 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-500 dark:bg-slate-700 dark:text-slate-100 dark:placeholder:text-slate-400';
+  const selectClass = 'h-10 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-emerald-500 dark:border-slate-500 dark:bg-slate-700 dark:text-slate-100';
+
   return (
-    <div className="relative flex items-center gap-2">
+    <div className="relative flex flex-wrap items-center gap-2">
       <button
         type="button"
         onClick={toggleTheme}
@@ -91,12 +94,60 @@ export function Toolbar() {
           </svg>
         )}
       </button>
+
+      <div className="flex items-center gap-2">
+        <input
+          type="text"
+          value={findTaskQuery}
+          onChange={(e) => { setFindTaskQuery(e.target.value); setFindTaskError(null); }}
+          onKeyDown={(e) => e.key === 'Enter' && handleFindTask()}
+          placeholder="Find task (e.g. AS-3)"
+          className={`w-32 shrink-0 ${inputClass}`}
+          title="Find task by ID"
+        />
+        <button
+          type="button"
+          onClick={handleFindTask}
+          className="h-10 shrink-0 rounded-lg bg-slate-600 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700"
+          title="Go to task"
+        >
+          Go
+        </button>
+      </div>
+      {findTaskError && (
+        <p className="w-full text-xs text-rose-600 dark:text-rose-400 sm:w-auto">{findTaskError}</p>
+      )}
+
+      <input
+        type="search"
+        placeholder="Search..."
+        value={search.query}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className={`min-w-[120px] max-w-[180px] ${inputClass}`}
+        title="Search by title, description, ID"
+      />
+
+      <select
+        value={filters.projectId}
+        onChange={(e) => setFilterProject(e.target.value)}
+        className={`min-w-[100px] max-w-[160px] ${selectClass}`}
+        title="Filter by project"
+      >
+        <option value="">All projects</option>
+        <option value={NO_PROJECT_FILTER}>No project</option>
+        {projects.map((p) => (
+          <option key={p.id} value={p.id}>
+            {p.name}
+          </option>
+        ))}
+      </select>
+
       <button
         ref={buttonRef}
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-300 bg-white text-xl font-medium text-slate-800 shadow-md hover:bg-slate-50 hover:text-slate-900 dark:border-slate-500 dark:bg-slate-700 dark:text-slate-100 dark:hover:bg-slate-600"
-        title="Add & filter"
+        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-300 bg-white text-xl font-medium text-slate-800 shadow-md hover:bg-slate-50 hover:text-slate-900 dark:border-slate-500 dark:bg-slate-700 dark:text-slate-100 dark:hover:bg-slate-600"
+        title="Add & more"
       >
         +
       </button>
@@ -104,7 +155,7 @@ export function Toolbar() {
       {open && (
         <div
           ref={panelRef}
-          className="absolute left-0 top-full z-50 mt-2 min-w-[280px] rounded-xl border border-slate-300 bg-white p-3 shadow-xl dark:border-slate-500 dark:bg-slate-800"
+          className="absolute right-0 top-full z-50 mt-2 min-w-[280px] rounded-xl border border-slate-300 bg-white p-3 shadow-xl dark:border-slate-500 dark:bg-slate-800"
         >
           <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-900 dark:text-slate-200">
             Add
@@ -133,90 +184,45 @@ export function Toolbar() {
           <div className="my-3 h-px bg-slate-300 dark:bg-slate-500" />
 
           <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-900 dark:text-slate-200">
-            Find Task
+            Filter by assignee
           </div>
-          <div className="mb-2 flex gap-2">
-            <input
-              type="text"
-              value={findTaskQuery}
-              onChange={(e) => { setFindTaskQuery(e.target.value); setFindTaskError(null); }}
-              onKeyDown={(e) => e.key === 'Enter' && handleFindTask()}
-              placeholder="e.g. AS-3, GEN-5"
-              className="flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-500 dark:bg-slate-700 dark:text-slate-100 dark:placeholder:text-slate-400"
-            />
-            <button
-              type="button"
-              onClick={handleFindTask}
-              className="shrink-0 rounded-lg bg-slate-600 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700"
-            >
-              Go
-            </button>
-          </div>
-          {findTaskError && (
-            <p className="mb-2 text-xs text-rose-600 dark:text-rose-400">{findTaskError}</p>
-          )}
-          <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-900 dark:text-slate-200">
-            Filter & search
-          </div>
-          <div className="flex flex-col gap-2">
-            <input
-              type="search"
-              placeholder="Search by title, description, ID..."
-              value={search.query}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-500 dark:bg-slate-700 dark:text-slate-100 dark:placeholder:text-slate-400"
-            />
-            <select
-              value={filters.assignedTo}
-              onChange={(e) => setFilterAssignedTo(e.target.value)}
-              className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-emerald-500 dark:border-slate-500 dark:bg-slate-700 dark:text-slate-100"
-            >
-              <option value="">All assignees</option>
-              {assignedOptions.map((a) => (
-                <option key={a} value={a}>
-                  {a}
-                </option>
-              ))}
-            </select>
-            <select
-              value={filters.projectId}
-              onChange={(e) => setFilterProject(e.target.value)}
-              className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-emerald-500 dark:border-slate-500 dark:bg-slate-700 dark:text-slate-100"
-            >
-              <option value="">All projects</option>
-              <option value={NO_PROJECT_FILTER}>No project</option>
-              {projects.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name}
-                </option>
-              ))}
-            </select>
-            {projects.length > 0 && (
-              <div className="mt-2">
-                <div className="mb-1 text-xs font-medium text-slate-500 dark:text-slate-400">Delete project</div>
-                <div className="max-h-48 space-y-1 overflow-y-auto rounded-lg pr-0.5">
-                  {projects.map((p) => (
-                    <div
-                      key={p.id}
-                      className="flex items-center justify-between gap-2 rounded-lg border border-slate-300 bg-slate-100 px-2 py-1.5 dark:border-slate-500 dark:bg-slate-700"
+          <select
+            value={filters.assignedTo}
+            onChange={(e) => setFilterAssignedTo(e.target.value)}
+            className={`w-full ${selectClass}`}
+          >
+            <option value="">All assignees</option>
+            {assignedOptions.map((a) => (
+              <option key={a} value={a}>
+                {a}
+              </option>
+            ))}
+          </select>
+          {projects.length > 0 && (
+            <div className="mt-2">
+              <div className="mb-1 text-xs font-medium text-slate-500 dark:text-slate-400">Delete project</div>
+              <div className="max-h-48 space-y-1 overflow-y-auto rounded-lg pr-0.5">
+                {projects.map((p) => (
+                  <div
+                    key={p.id}
+                    className="flex items-center justify-between gap-2 rounded-lg border border-slate-300 bg-slate-100 px-2 py-1.5 dark:border-slate-500 dark:bg-slate-700"
+                  >
+                    <span className="truncate text-sm text-slate-900 dark:text-slate-100">{p.name}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteProject(p.id, p.name)}
+                      className="shrink-0 rounded p-1 text-slate-400 hover:bg-rose-100 hover:text-rose-600 dark:hover:bg-rose-900/30 dark:hover:text-rose-400"
+                      title={`Delete project ${p.name}`}
                     >
-                      <span className="truncate text-sm text-slate-900 dark:text-slate-100">{p.name}</span>
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteProject(p.id, p.name)}
-                        className="shrink-0 rounded p-1 text-slate-400 hover:bg-rose-100 hover:text-rose-600 dark:hover:bg-rose-900/30 dark:hover:text-rose-400"
-                        title={`Delete project ${p.name}`}
-                      >
-                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
-                    </div>
-                  ))}
-                </div>
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                ))}
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
           <div className="my-3 h-px bg-slate-300 dark:bg-slate-500" />
 

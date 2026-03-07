@@ -346,7 +346,7 @@ export function TodoCanvas() {
           >
             <div className="relative min-h-full min-w-full">
               <div
-                className="canvas-background absolute inset-0 cursor-grab active:cursor-grabbing bg-slate-200 dark:bg-slate-900"
+                className="canvas-background absolute inset-0 cursor-grab active:cursor-grabbing bg-slate-200 dark:bg-black"
                 style={{
                   left: -3000,
                   top: -3000,

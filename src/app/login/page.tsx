@@ -23,7 +23,7 @@ export default function LoginPage() {
 
   if (checking) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center bg-slate-200 px-4 dark:bg-slate-900">
+      <main className="flex min-h-screen flex-col items-center justify-center bg-slate-200 px-4 dark:bg-black">
         <p className="text-slate-500 dark:text-slate-400">Loading…</p>
       </main>
     );
@@ -52,7 +52,7 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="relative flex min-h-screen flex-col items-center justify-center bg-slate-200 px-4 dark:bg-slate-900">
+    <main className="relative flex min-h-screen flex-col items-center justify-center bg-slate-200 px-4 dark:bg-black">
       <button
         type="button"
         onClick={toggleTheme}
