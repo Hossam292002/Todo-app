@@ -6,7 +6,7 @@ import { DndContext, useSensor, useSensors, PointerSensor, TouchSensor, pointerW
 import { arrayMove } from '@dnd-kit/sortable';
 import { useTodoStore } from '@/store/useTodoStore';
 import { CategoryColumn } from './CategoryColumn';
-import { TaskCard, getTaskColor, getTaskColorByKey } from './TaskCard';
+import { TaskCard, getTaskColor, getTaskColorByKey, getRelativeTime } from './TaskCard';
 import { Toolbar } from './Toolbar';
 import { DropIndicatorContext, type DropDirection } from '@/context/DropIndicatorContext';
 
@@ -383,6 +383,11 @@ function DragOverlayContent({ task, categoryId }: { task: import('@/lib/supabase
       <div className={`font-medium ${color.accent} ${color.darkAccent}`}>{task.title}</div>
       {task.description && (
         <div className="mt-1 text-sm text-slate-700 line-clamp-2 dark:text-slate-300">{task.description}</div>
+      )}
+      {task.created_at && (
+        <div className="absolute bottom-2 right-2 text-right text-[10px] text-slate-500 dark:text-slate-400">
+          {getRelativeTime(task.created_at)}
+        </div>
       )}
     </div>
   );

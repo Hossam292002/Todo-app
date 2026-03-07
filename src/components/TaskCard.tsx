@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useState } from 'react';
+import { memo, useState, useEffect } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { Task } from '@/lib/supabase';
@@ -48,6 +48,41 @@ export function getTaskColorByKey(key: CategoryColorKey | undefined): {
   return { bg: c.bg, border: c.border, accent: c.accent, darkBg: c.darkBg, darkBorder: c.darkBorder, darkAccent: c.darkAccent };
 }
 
+export function getRelativeTime(createdAt: string | undefined): string {
+  if (!createdAt) return '';
+  const date = new Date(createdAt);
+  if (Number.isNaN(date.getTime())) return '';
+  const now = Date.now();
+  const diffMs = now - date.getTime();
+  const diffSec = Math.floor(diffMs / 1000);
+  const diffMin = Math.floor(diffMs / 60000);
+  const diffHr = Math.floor(diffMs / 3600000);
+  const diffDay = Math.floor(diffMs / 86400000);
+  if (diffSec < 45) return 'Just now';
+  if (diffSec < 90) return '1 minute ago';
+  if (diffMin < 60) return `${diffMin} minutes ago`;
+  if (diffMin < 90) return '1 hour ago';
+  if (diffHr < 24) return `${diffHr} hours ago`;
+  if (diffDay < 2) return '1 day ago';
+  if (diffDay < 30) return `${diffDay} days ago`;
+  const diffMonth = Math.floor(diffDay / 30);
+  if (diffMonth < 2) return '1 month ago';
+  if (diffDay < 365) return `${diffMonth} months ago`;
+  const diffYear = Math.floor(diffDay / 365);
+  return diffYear === 1 ? '1 year ago' : `${diffYear} years ago`;
+}
+
+function useRelativeTime(createdAt: string | undefined): string {
+  const [relative, setRelative] = useState(() => getRelativeTime(createdAt));
+  useEffect(() => {
+    if (!createdAt) return;
+    setRelative(getRelativeTime(createdAt));
+    const interval = setInterval(() => setRelative(getRelativeTime(createdAt)), 30000);
+    return () => clearInterval(interval);
+  }, [createdAt]);
+  return relative;
+}
+
 type TaskCardProps = {
   task: Task;
   categoryId: string;
@@ -58,6 +93,7 @@ export const TaskCard = memo(function TaskCard({ task, categoryId, categoryColor
   const [showMoveModal, setShowMoveModal] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const deleteTask = useTodoStore((s) => s.deleteTask);
+  const relativeTime = useRelativeTime(task.created_at);
   const { overId, direction } = useDropIndicator();
   const isDropTarget = overId === `task-${task.task_id}`;
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -96,7 +132,7 @@ export const TaskCard = memo(function TaskCard({ task, categoryId, categoryColor
             aria-hidden
           />
         )}
-        <div {...listeners} {...attributes} className="min-h-[2rem]">
+        <div {...listeners} {...attributes} className={`min-h-[2rem] ${relativeTime ? 'pb-5' : ''}`}>
           <div className={`text-xs font-mono ${color.accent} ${color.darkAccent}`}>#{task.display_id ?? task.task_id}</div>
           <div className={`font-medium ${color.accent} ${color.darkAccent}`}>{task.title}</div>
           {task.description && (
@@ -109,6 +145,11 @@ export const TaskCard = memo(function TaskCard({ task, categoryId, categoryColor
             </div>
           )}
         </div>
+        {relativeTime ? (
+          <div className="absolute bottom-2 right-2 text-right text-[10px] text-slate-500 dark:text-slate-400" title={task.created_at}>
+            {relativeTime}
+          </div>
+        ) : null}
         <div className="absolute right-2 top-2 flex gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
           <button
             onClick={(e) => { e.stopPropagation(); setShowUpdateModal(true); }}
