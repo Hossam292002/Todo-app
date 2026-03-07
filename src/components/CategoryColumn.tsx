@@ -98,17 +98,17 @@ export const CategoryColumn = memo(function CategoryColumn({ categoryId, name, w
   return (
     <>
       <div
-        className="category-column relative flex shrink-0 flex-col rounded-xl border-2 border-dashed border-slate-300 bg-white/95 pt-5 shadow-lg backdrop-blur-sm dark:border-slate-600 dark:bg-slate-900/95"
+        className="category-column relative flex shrink-0 flex-col rounded-xl border-2 border-dashed border-slate-400 bg-white pt-5 shadow-lg backdrop-blur-sm dark:border-slate-500 dark:bg-slate-800"
         style={{ width: displayWidth, minWidth: MIN_WIDTH }}
       >
         {/* Category name over the frame (straddles top border) */}
         <div className="absolute left-4 top-0 flex -translate-y-1/2 items-center gap-2">
-          <span className="rounded-md border border-dashed border-slate-300 bg-white px-3 py-1 text-sm font-semibold text-slate-800 shadow-sm dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200">
+          <span className="rounded-md border border-dashed border-slate-400 bg-white px-3 py-1 text-sm font-semibold text-slate-900 shadow-sm dark:border-slate-500 dark:bg-slate-800 dark:text-slate-100">
             {name}
           </span>
           <button
             onClick={() => setShowEditModal(true)}
-            className="rounded p-1.5 text-slate-500 opacity-80 hover:bg-slate-200 hover:opacity-100 dark:text-slate-400 dark:hover:bg-slate-700"
+            className="rounded p-1.5 text-slate-700 opacity-90 hover:bg-slate-200 hover:opacity-100 dark:text-slate-200 dark:hover:bg-slate-600"
             title="Edit category"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -117,7 +117,7 @@ export const CategoryColumn = memo(function CategoryColumn({ categoryId, name, w
           </button>
           <button
             onClick={handleDeleteCategory}
-            className="rounded p-1.5 text-slate-500 opacity-80 hover:bg-slate-200 hover:opacity-100 dark:text-slate-400 dark:hover:bg-slate-700"
+            className="rounded p-1.5 text-slate-700 opacity-90 hover:bg-slate-200 hover:opacity-100 dark:text-slate-200 dark:hover:bg-slate-600"
             title="Delete category"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

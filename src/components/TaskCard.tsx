@@ -11,23 +11,21 @@ import { useDropIndicator } from '@/context/DropIndicatorContext';
 import { useFindTask } from '@/context/FindTaskContext';
 import { useTodoStore } from '@/store/useTodoStore';
 
+/** Same colors in light and dark mode so task cards look consistent across themes */
 export const CATEGORY_COLOR_OPTIONS: {
   key: CategoryColorKey;
   bg: string;
   border: string;
   accent: string;
-  darkBg: string;
-  darkBorder: string;
-  darkAccent: string;
 }[] = [
-  { key: 'amber', bg: 'bg-amber-100', border: 'border-amber-300', accent: 'text-amber-800', darkBg: 'dark:bg-amber-900/40', darkBorder: 'dark:border-amber-600', darkAccent: 'dark:text-amber-200' },
-  { key: 'blue', bg: 'bg-blue-100', border: 'border-blue-300', accent: 'text-blue-800', darkBg: 'dark:bg-blue-900/40', darkBorder: 'dark:border-blue-600', darkAccent: 'dark:text-blue-200' },
-  { key: 'emerald', bg: 'bg-emerald-100', border: 'border-emerald-300', accent: 'text-emerald-800', darkBg: 'dark:bg-emerald-900/40', darkBorder: 'dark:border-emerald-600', darkAccent: 'dark:text-emerald-200' },
-  { key: 'violet', bg: 'bg-violet-100', border: 'border-violet-300', accent: 'text-violet-800', darkBg: 'dark:bg-violet-900/40', darkBorder: 'dark:border-violet-600', darkAccent: 'dark:text-violet-200' },
-  { key: 'rose', bg: 'bg-rose-100', border: 'border-rose-300', accent: 'text-rose-800', darkBg: 'dark:bg-rose-900/40', darkBorder: 'dark:border-rose-600', darkAccent: 'dark:text-rose-200' },
-  { key: 'cyan', bg: 'bg-cyan-100', border: 'border-cyan-300', accent: 'text-cyan-800', darkBg: 'dark:bg-cyan-900/40', darkBorder: 'dark:border-cyan-600', darkAccent: 'dark:text-cyan-200' },
-  { key: 'orange', bg: 'bg-orange-100', border: 'border-orange-300', accent: 'text-orange-800', darkBg: 'dark:bg-orange-900/40', darkBorder: 'dark:border-orange-600', darkAccent: 'dark:text-orange-200' },
-  { key: 'fuchsia', bg: 'bg-fuchsia-100', border: 'border-fuchsia-300', accent: 'text-fuchsia-800', darkBg: 'dark:bg-fuchsia-900/40', darkBorder: 'dark:border-fuchsia-600', darkAccent: 'dark:text-fuchsia-200' },
+  { key: 'amber', bg: 'bg-amber-100', border: 'border-amber-300', accent: 'text-amber-800' },
+  { key: 'blue', bg: 'bg-blue-100', border: 'border-blue-300', accent: 'text-blue-800' },
+  { key: 'emerald', bg: 'bg-emerald-100', border: 'border-emerald-300', accent: 'text-emerald-800' },
+  { key: 'violet', bg: 'bg-violet-100', border: 'border-violet-300', accent: 'text-violet-800' },
+  { key: 'rose', bg: 'bg-rose-100', border: 'border-rose-300', accent: 'text-rose-800' },
+  { key: 'cyan', bg: 'bg-cyan-100', border: 'border-cyan-300', accent: 'text-cyan-800' },
+  { key: 'orange', bg: 'bg-orange-100', border: 'border-orange-300', accent: 'text-orange-800' },
+  { key: 'fuchsia', bg: 'bg-fuchsia-100', border: 'border-fuchsia-300', accent: 'text-fuchsia-800' },
 ];
 
 const COLOR_BY_KEY = Object.fromEntries(CATEGORY_COLOR_OPTIONS.map((c) => [c.key, c]));
@@ -40,13 +38,10 @@ export function getTaskColorByKey(key: CategoryColorKey | undefined): {
   bg: string;
   border: string;
   accent: string;
-  darkBg: string;
-  darkBorder: string;
-  darkAccent: string;
 } {
   if (!key || !COLOR_BY_KEY[key]) return CATEGORY_COLOR_OPTIONS[2]; // default emerald
   const c = COLOR_BY_KEY[key];
-  return { bg: c.bg, border: c.border, accent: c.accent, darkBg: c.darkBg, darkBorder: c.darkBorder, darkAccent: c.darkAccent };
+  return { bg: c.bg, border: c.border, accent: c.accent };
 }
 
 export function getRelativeTime(createdAt: string | undefined): string {
@@ -126,9 +121,9 @@ export const TaskCard = memo(function TaskCard({ task, categoryId, categoryColor
         ref={setNodeRef}
         style={style}
         data-find-task-id={task.task_id}
-        className={`task-card nodrag nopan group relative w-[180px] shrink-0 cursor-grab rounded-xl border border-slate-200/50 p-3 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:cursor-grabbing dark:border-slate-600/40 ${
+        className={`task-card nodrag nopan group relative w-[180px] shrink-0 cursor-grab rounded-xl border p-3 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:cursor-grabbing ${
           isDragging ? 'opacity-0' : ''
-        } ${isHighlighted ? 'ring-2 ring-emerald-400 animate-pulse dark:ring-emerald-500' : ''} ${color.bg} ${color.darkBg} shadow-[0_2px_6px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08),0_8px_20px_rgba(0,0,0,0.06)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.2)] dark:hover:shadow-[0_6px_16px_rgba(0,0,0,0.25)]`}
+        } ${isHighlighted ? 'ring-2 ring-emerald-400 animate-pulse dark:ring-emerald-500' : ''} ${color.bg} ${color.border} shadow-[0_2px_6px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08),0_8px_20px_rgba(0,0,0,0.06)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.2)] dark:hover:shadow-[0_6px_16px_rgba(0,0,0,0.25)]`}
       >
         {isDropTarget && direction && (
           <div
@@ -137,27 +132,27 @@ export const TaskCard = memo(function TaskCard({ task, categoryId, categoryColor
           />
         )}
         <div {...listeners} {...attributes} className={`min-h-[2rem] ${relativeTime ? 'pb-5' : ''}`}>
-          <div className={`text-xs font-mono ${color.accent} ${color.darkAccent}`}>#{task.display_id ?? task.task_id}</div>
-          <div className={`font-medium ${color.accent} ${color.darkAccent}`}>{task.title}</div>
+          <div className={`text-xs font-mono ${color.accent}`}>#{task.display_id ?? task.task_id}</div>
+          <div className={`font-medium ${color.accent}`}>{task.title}</div>
           {task.description && (
-            <div className="mt-1 text-sm text-slate-700 line-clamp-2 dark:text-slate-300">{task.description}</div>
+            <div className="mt-1 text-sm text-slate-800 line-clamp-2">{task.description}</div>
           )}
           {(task.assigned_to || task.project_id) && (
-            <div className="mt-2 flex flex-wrap gap-1 text-xs text-slate-700 dark:text-slate-400">
-              {task.assigned_to && <span className="rounded bg-white/50 px-1.5 py-0.5 dark:bg-black/20">{task.assigned_to}</span>}
-              {task.project_id && <span className="rounded bg-white/50 px-1.5 py-0.5 dark:bg-black/20">{task.project_id}</span>}
+            <div className="mt-2 flex flex-wrap gap-1 text-xs text-slate-700">
+              {task.assigned_to && <span className="rounded bg-slate-200/80 px-1.5 py-0.5 text-slate-800">{task.assigned_to}</span>}
+              {task.project_id && <span className="rounded bg-slate-200/80 px-1.5 py-0.5 text-slate-800">{task.project_id}</span>}
             </div>
           )}
         </div>
         {relativeTime ? (
-          <div className="absolute bottom-2 right-2 text-right text-[10px] text-slate-500 dark:text-slate-400" title={task.created_at}>
+          <div className="absolute bottom-2 right-2 text-right text-[10px] text-slate-600" title={task.created_at}>
             {relativeTime}
           </div>
         ) : null}
         <div className="absolute right-2 top-2 flex gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
           <button
             onClick={(e) => { e.stopPropagation(); setShowUpdateModal(true); }}
-            className="rounded p-1 text-slate-500 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-slate-600 dark:hover:text-slate-200"
+            className="rounded p-1 text-slate-600 hover:bg-slate-200 hover:text-slate-800 dark:text-slate-700 dark:hover:bg-slate-300 dark:hover:text-slate-900"
             title="Edit task"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -166,7 +161,7 @@ export const TaskCard = memo(function TaskCard({ task, categoryId, categoryColor
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); setShowMoveModal(true); }}
-            className="rounded p-1 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-600"
+            className="rounded p-1 text-slate-600 hover:bg-slate-200 dark:text-slate-700 dark:hover:bg-slate-300"
             title="Move to another category"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -180,7 +175,7 @@ export const TaskCard = memo(function TaskCard({ task, categoryId, categoryColor
                 deleteTask(task.task_id);
               }
             }}
-            className="rounded p-1 text-slate-500 hover:bg-rose-100 hover:text-rose-600 dark:hover:bg-rose-900/30 dark:hover:text-rose-400"
+            className="rounded p-1 text-slate-600 hover:bg-rose-100 hover:text-rose-700 dark:text-slate-700 dark:hover:bg-rose-200 dark:hover:text-rose-800"
             title="Delete task"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

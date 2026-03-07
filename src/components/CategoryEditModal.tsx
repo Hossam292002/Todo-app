@@ -52,24 +52,24 @@ export function CategoryEditModal({ isOpen, onClose, category }: CategoryEditMod
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-900"
+        className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-800"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="mb-4 text-xl font-bold text-slate-800 dark:text-slate-100">Edit Category</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-400">Category Name</label>
+            <label className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-200">Category Name</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-400"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-500 dark:bg-slate-700 dark:text-slate-100 dark:placeholder:text-slate-400"
               placeholder="e.g. To Do, In Progress"
               required
             />
           </div>
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-400">
+            <label className="mb-2 block text-sm font-medium text-slate-900 dark:text-slate-200">
               Color (for all tasks in this category)
             </label>
             <div className="flex flex-wrap gap-2">
@@ -90,13 +90,13 @@ export function CategoryEditModal({ isOpen, onClose, category }: CategoryEditMod
           </div>
           {otherCategories.length > 0 && (
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-400">
+              <label className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-200">
                 Switch place with another category
               </label>
               <select
                 value={switchWithId}
                 onChange={(e) => setSwitchWithId(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-500 dark:bg-slate-700 dark:text-slate-100"
               >
                 <option value="">— No change —</option>
                 {otherCategories.map((c) => (
@@ -111,7 +111,7 @@ export function CategoryEditModal({ isOpen, onClose, category }: CategoryEditMod
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 rounded-lg border border-slate-300 px-4 py-2 font-medium text-slate-800 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
+              className="flex-1 rounded-lg border border-slate-300 px-4 py-2 font-medium text-slate-800 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-100 dark:hover:bg-slate-700"
             >
               Cancel
             </button>

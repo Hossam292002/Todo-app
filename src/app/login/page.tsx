@@ -23,7 +23,7 @@ export default function LoginPage() {
 
   if (checking) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center bg-slate-100 px-4 dark:bg-slate-950">
+      <main className="flex min-h-screen flex-col items-center justify-center bg-slate-200 px-4 dark:bg-slate-900">
         <p className="text-slate-500 dark:text-slate-400">Loading…</p>
       </main>
     );
@@ -52,11 +52,11 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="relative flex min-h-screen flex-col items-center justify-center bg-slate-100 px-4 dark:bg-slate-950">
+    <main className="relative flex min-h-screen flex-col items-center justify-center bg-slate-200 px-4 dark:bg-slate-900">
       <button
         type="button"
         onClick={toggleTheme}
-        className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-md hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+        className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-xl border border-slate-300 bg-white text-slate-800 shadow-md hover:bg-slate-50 dark:border-slate-500 dark:bg-slate-700 dark:text-slate-100 dark:hover:bg-slate-600"
         title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
         aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
       >
@@ -71,9 +71,9 @@ export default function LoginPage() {
           </svg>
         )}
       </button>
-      <div className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-8 shadow-xl dark:border-slate-700 dark:bg-slate-900">
+      <div className="w-full max-w-sm rounded-2xl border border-slate-300 bg-white p-8 shadow-xl dark:border-slate-500 dark:bg-slate-800">
         <h1 className="mb-2 text-2xl font-bold text-slate-800 dark:text-slate-100">Log in</h1>
-        <p className="mb-6 text-sm text-slate-600 dark:text-slate-400">
+        <p className="mb-6 text-sm text-slate-700 dark:text-slate-200">
           Sign in to your Todo Whiteboard account
         </p>
 
@@ -84,7 +84,7 @@ export default function LoginPage() {
             </div>
           )}
           <div>
-            <label htmlFor="login-email" className="mb-1 block text-sm font-medium text-slate-800 dark:text-slate-300">
+            <label htmlFor="login-email" className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100">
               Email
             </label>
             <input
@@ -94,12 +94,12 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               autoComplete="email"
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-400"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-500 dark:bg-slate-700 dark:text-slate-100 dark:placeholder:text-slate-400"
               placeholder="you@example.com"
             />
           </div>
           <div>
-            <label htmlFor="login-password" className="mb-1 block text-sm font-medium text-slate-800 dark:text-slate-300">
+            <label htmlFor="login-password" className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-100">
               Password
             </label>
             <input
@@ -109,7 +109,7 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               autoComplete="current-password"
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-400"
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-500 dark:bg-slate-700 dark:text-slate-100 dark:placeholder:text-slate-400"
               placeholder="••••••••"
             />
           </div>
