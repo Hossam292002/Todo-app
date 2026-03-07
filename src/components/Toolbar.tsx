@@ -4,11 +4,13 @@ import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTodoStore } from '@/store/useTodoStore';
 import { supabase } from '@/lib/supabase';
+import { useTheme } from '@/context/ThemeContext';
 import { ProjectModal } from './ProjectModal';
 import { CategoryModal } from './CategoryModal';
 
 export function Toolbar() {
   const router = useRouter();
+  const { theme, toggleTheme } = useTheme();
   const [open, setOpen] = useState(false);
   const [showProjectModal, setShowProjectModal] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
@@ -49,7 +51,25 @@ export function Toolbar() {
   }, [open]);
 
   return (
-    <div className="relative">
+    <div className="relative flex items-center gap-2">
+      <button
+        type="button"
+        onClick={toggleTheme}
+        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-md transition-colors hover:bg-slate-50 hover:text-slate-800 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+        title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+        aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+      >
+        {theme === 'dark' ? (
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+          </svg>
+        ) : (
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+          </svg>
+        )}
+      </button>
       <button
         ref={buttonRef}
         type="button"

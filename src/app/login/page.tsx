@@ -3,9 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { theme, toggleTheme } = useTheme();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -50,7 +52,25 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-slate-100 px-4 dark:bg-slate-950">
+    <main className="relative flex min-h-screen flex-col items-center justify-center bg-slate-100 px-4 dark:bg-slate-950">
+      <button
+        type="button"
+        onClick={toggleTheme}
+        className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-md hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+        title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+        aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+      >
+        {theme === 'dark' ? (
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+          </svg>
+        ) : (
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-5 w-5">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+          </svg>
+        )}
+      </button>
       <div className="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-8 shadow-xl dark:border-slate-700 dark:bg-slate-900">
         <h1 className="mb-2 text-2xl font-bold text-slate-800 dark:text-slate-100">Log in</h1>
         <p className="mb-6 text-sm text-slate-500 dark:text-slate-400">

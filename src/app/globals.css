@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Use class-based dark mode so the theme switch controls appearance */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #171717;

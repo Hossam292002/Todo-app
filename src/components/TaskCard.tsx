@@ -9,15 +9,23 @@ import { TaskEditModal } from './TaskEditModal';
 import { useDropIndicator } from '@/context/DropIndicatorContext';
 import { useTodoStore } from '@/store/useTodoStore';
 
-export const CATEGORY_COLOR_OPTIONS: { key: CategoryColorKey; bg: string; border: string; accent: string }[] = [
-  { key: 'amber', bg: 'bg-amber-100', border: 'border-amber-300', accent: 'text-amber-800' },
-  { key: 'blue', bg: 'bg-blue-100', border: 'border-blue-300', accent: 'text-blue-800' },
-  { key: 'emerald', bg: 'bg-emerald-100', border: 'border-emerald-300', accent: 'text-emerald-800' },
-  { key: 'violet', bg: 'bg-violet-100', border: 'border-violet-300', accent: 'text-violet-800' },
-  { key: 'rose', bg: 'bg-rose-100', border: 'border-rose-300', accent: 'text-rose-800' },
-  { key: 'cyan', bg: 'bg-cyan-100', border: 'border-cyan-300', accent: 'text-cyan-800' },
-  { key: 'orange', bg: 'bg-orange-100', border: 'border-orange-300', accent: 'text-orange-800' },
-  { key: 'fuchsia', bg: 'bg-fuchsia-100', border: 'border-fuchsia-300', accent: 'text-fuchsia-800' },
+export const CATEGORY_COLOR_OPTIONS: {
+  key: CategoryColorKey;
+  bg: string;
+  border: string;
+  accent: string;
+  darkBg: string;
+  darkBorder: string;
+  darkAccent: string;
+}[] = [
+  { key: 'amber', bg: 'bg-amber-100', border: 'border-amber-300', accent: 'text-amber-800', darkBg: 'dark:bg-amber-900/40', darkBorder: 'dark:border-amber-600', darkAccent: 'dark:text-amber-200' },
+  { key: 'blue', bg: 'bg-blue-100', border: 'border-blue-300', accent: 'text-blue-800', darkBg: 'dark:bg-blue-900/40', darkBorder: 'dark:border-blue-600', darkAccent: 'dark:text-blue-200' },
+  { key: 'emerald', bg: 'bg-emerald-100', border: 'border-emerald-300', accent: 'text-emerald-800', darkBg: 'dark:bg-emerald-900/40', darkBorder: 'dark:border-emerald-600', darkAccent: 'dark:text-emerald-200' },
+  { key: 'violet', bg: 'bg-violet-100', border: 'border-violet-300', accent: 'text-violet-800', darkBg: 'dark:bg-violet-900/40', darkBorder: 'dark:border-violet-600', darkAccent: 'dark:text-violet-200' },
+  { key: 'rose', bg: 'bg-rose-100', border: 'border-rose-300', accent: 'text-rose-800', darkBg: 'dark:bg-rose-900/40', darkBorder: 'dark:border-rose-600', darkAccent: 'dark:text-rose-200' },
+  { key: 'cyan', bg: 'bg-cyan-100', border: 'border-cyan-300', accent: 'text-cyan-800', darkBg: 'dark:bg-cyan-900/40', darkBorder: 'dark:border-cyan-600', darkAccent: 'dark:text-cyan-200' },
+  { key: 'orange', bg: 'bg-orange-100', border: 'border-orange-300', accent: 'text-orange-800', darkBg: 'dark:bg-orange-900/40', darkBorder: 'dark:border-orange-600', darkAccent: 'dark:text-orange-200' },
+  { key: 'fuchsia', bg: 'bg-fuchsia-100', border: 'border-fuchsia-300', accent: 'text-fuchsia-800', darkBg: 'dark:bg-fuchsia-900/40', darkBorder: 'dark:border-fuchsia-600', darkAccent: 'dark:text-fuchsia-200' },
 ];
 
 const COLOR_BY_KEY = Object.fromEntries(CATEGORY_COLOR_OPTIONS.map((c) => [c.key, c]));
@@ -26,10 +34,17 @@ export function getTaskColor(taskId: number) {
   return CATEGORY_COLOR_OPTIONS[Math.abs(taskId - 1) % CATEGORY_COLOR_OPTIONS.length];
 }
 
-export function getTaskColorByKey(key: CategoryColorKey | undefined): { bg: string; border: string; accent: string } {
+export function getTaskColorByKey(key: CategoryColorKey | undefined): {
+  bg: string;
+  border: string;
+  accent: string;
+  darkBg: string;
+  darkBorder: string;
+  darkAccent: string;
+} {
   if (!key || !COLOR_BY_KEY[key]) return CATEGORY_COLOR_OPTIONS[2]; // default emerald
   const c = COLOR_BY_KEY[key];
-  return { bg: c.bg, border: c.border, accent: c.accent };
+  return { bg: c.bg, border: c.border, accent: c.accent, darkBg: c.darkBg, darkBorder: c.darkBorder, darkAccent: c.darkAccent };
 }
 
 type TaskCardProps = {
@@ -69,7 +84,7 @@ export const TaskCard = memo(function TaskCard({ task, categoryId, categoryColor
       <div
         ref={setNodeRef}
         style={style}
-        className={`task-card nodrag nopan group relative w-[180px] shrink-0 cursor-grab rounded-lg border-2 p-3 shadow-sm transition-shadow hover:shadow-md active:cursor-grabbing ${color.bg} ${color.border} dark:bg-slate-800/50 ${
+        className={`task-card nodrag nopan group relative w-[180px] shrink-0 cursor-grab rounded-lg border-2 p-3 shadow-sm transition-shadow hover:shadow-md active:cursor-grabbing ${color.bg} ${color.border} ${color.darkBg} ${color.darkBorder} ${
           isDragging ? 'opacity-0' : ''
         }`}
       >
@@ -80,15 +95,15 @@ export const TaskCard = memo(function TaskCard({ task, categoryId, categoryColor
           />
         )}
         <div {...listeners} {...attributes} className="min-h-[2rem]">
-          <div className={`text-xs font-mono ${color.accent}`}>{task.display_id ?? `#${task.task_id}`}</div>
-          <div className={`font-medium ${color.accent}`}>{task.title}</div>
+          <div className={`text-xs font-mono ${color.accent} ${color.darkAccent}`}>{task.display_id ?? `#${task.task_id}`}</div>
+          <div className={`font-medium ${color.accent} ${color.darkAccent}`}>{task.title}</div>
           {task.description && (
-            <div className="mt-1 text-sm text-slate-600 line-clamp-2 dark:text-slate-400">{task.description}</div>
+            <div className="mt-1 text-sm text-slate-600 line-clamp-2 dark:text-slate-300">{task.description}</div>
           )}
           {(task.assigned_to || task.project_id) && (
-            <div className="mt-2 flex flex-wrap gap-1 text-xs text-slate-600 dark:text-slate-500">
-              {task.assigned_to && <span className="rounded bg-slate-100 px-1.5 py-0.5 dark:bg-slate-700">{task.assigned_to}</span>}
-              {task.project_id && <span className="rounded bg-slate-100 px-1.5 py-0.5 dark:bg-slate-700">{task.project_id}</span>}
+            <div className="mt-2 flex flex-wrap gap-1 text-xs text-slate-600 dark:text-slate-400">
+              {task.assigned_to && <span className="rounded bg-white/50 px-1.5 py-0.5 dark:bg-black/20">{task.assigned_to}</span>}
+              {task.project_id && <span className="rounded bg-white/50 px-1.5 py-0.5 dark:bg-black/20">{task.project_id}</span>}
             </div>
           )}
         </div>
