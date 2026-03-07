@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 
@@ -102,13 +101,6 @@ export default function LoginPage() {
             {loading ? 'Signing in…' : 'Log in'}
           </button>
         </form>
-
-        <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
-          Don&apos;t have an account?{' '}
-          <Link href="/signup" className="font-medium text-emerald-600 hover:underline dark:text-emerald-400">
-            Sign up
-          </Link>
-        </p>
       </div>
     </main>
   );
