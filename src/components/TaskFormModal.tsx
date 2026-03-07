@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTodoStore } from '@/store/useTodoStore';
+import { SprintCalendar } from './SprintCalendar';
 
 type TaskFormModalProps = {
   isOpen: boolean;
@@ -15,6 +16,7 @@ export function TaskFormModal({ isOpen, onClose, categoryId }: TaskFormModalProp
   const [description, setDescription] = useState('');
   const [assignedTo, setAssignedTo] = useState('');
   const [projectId, setProjectId] = useState('');
+  const [sprintStart, setSprintStart] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const addTask = useTodoStore((s) => s.addTask);
@@ -27,6 +29,7 @@ export function TaskFormModal({ isOpen, onClose, categoryId }: TaskFormModalProp
       setDescription('');
       setAssignedTo('');
       setProjectId('');
+      setSprintStart(null);
       setError(null);
     }
   }, [isOpen]);
@@ -44,6 +47,7 @@ export function TaskFormModal({ isOpen, onClose, categoryId }: TaskFormModalProp
         description: description.trim() || undefined,
         assigned_to: assignedTo.trim() || undefined,
         project_id: projectId || undefined,
+        sprint_start: sprintStart || undefined,
         category_id: categoryId,
         position_x: 0,
         position_y: 0,
@@ -66,65 +70,74 @@ export function TaskFormModal({ isOpen, onClose, categoryId }: TaskFormModalProp
   if (!isOpen) return null;
 
   const modal = (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={onClose}>
       <div
-        className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-800"
+        className="flex max-h-[90vh] w-full max-w-md flex-col rounded-2xl bg-white shadow-2xl dark:bg-slate-800"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="mb-4 text-xl font-bold text-slate-800 dark:text-slate-100">Create Task</h2>
-        {error && (
-          <div className="mb-4 rounded-lg bg-rose-100 px-3 py-2 text-sm text-rose-800 dark:bg-rose-900/50 dark:text-rose-200">
-            {error}
+        <div className="shrink-0 border-b border-slate-200 px-6 py-4 dark:border-slate-600">
+          <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">Create Task</h2>
+          {error && (
+            <div className="mt-2 rounded-lg bg-rose-100 px-3 py-2 text-sm text-rose-800 dark:bg-rose-900/50 dark:text-rose-200">
+              {error}
+            </div>
+          )}
+        </div>
+        <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
+          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-6">
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-200">Title *</label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-500 dark:bg-slate-700 dark:text-slate-100 dark:placeholder:text-slate-400"
+                placeholder="Task title"
+                required
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-200">Description</label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-500 dark:bg-slate-700 dark:text-slate-100 dark:placeholder:text-slate-400"
+                placeholder="Task description"
+                rows={3}
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-200">Assigned To</label>
+              <input
+                type="text"
+                value={assignedTo}
+                onChange={(e) => setAssignedTo(e.target.value)}
+                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-500 dark:bg-slate-700 dark:text-slate-100 dark:placeholder:text-slate-400"
+                placeholder="Assignee name"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-200">Project</label>
+              <select
+                value={projectId}
+                onChange={(e) => setProjectId(e.target.value)}
+                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-500 dark:bg-slate-700 dark:text-slate-100"
+              >
+                <option value="">No project</option>
+                {projects.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name} ({p.id})
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-200">Sprint</label>
+              <p className="mb-1 text-xs text-slate-500 dark:text-slate-400">Select a day to choose its week (Mon–Sun)</p>
+              <SprintCalendar value={sprintStart} onChange={setSprintStart} />
+            </div>
           </div>
-        )}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-200">Title *</label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-500 dark:bg-slate-700 dark:text-slate-100 dark:placeholder:text-slate-400"
-              placeholder="Task title"
-              required
-            />
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-200">Description</label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-500 dark:bg-slate-700 dark:text-slate-100 dark:placeholder:text-slate-400"
-              placeholder="Task description"
-              rows={3}
-            />
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-200">Assigned To</label>
-            <input
-              type="text"
-              value={assignedTo}
-              onChange={(e) => setAssignedTo(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-500 dark:bg-slate-700 dark:text-slate-100 dark:placeholder:text-slate-400"
-              placeholder="Assignee name"
-            />
-          </div>
-          <div>
-            <label className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-200">Project</label>
-            <select
-              value={projectId}
-              onChange={(e) => setProjectId(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-500 dark:bg-slate-700 dark:text-slate-100"
-            >
-              <option value="">No project</option>
-              {projects.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name} ({p.id})
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="flex gap-2 pt-2">
+          <div className="shrink-0 flex gap-2 border-t border-slate-200 p-4 dark:border-slate-600">
             <button
               type="button"
               onClick={onClose}

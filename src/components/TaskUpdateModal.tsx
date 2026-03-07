@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTodoStore } from '@/store/useTodoStore';
 import type { Task } from '@/lib/supabase';
+import { SprintCalendar } from './SprintCalendar';
 
 type TaskUpdateModalProps = {
   isOpen: boolean;
@@ -16,6 +17,7 @@ export function TaskUpdateModal({ isOpen, onClose, task }: TaskUpdateModalProps)
   const [description, setDescription] = useState(task.description ?? '');
   const [assignedTo, setAssignedTo] = useState(task.assigned_to ?? '');
   const [projectId, setProjectId] = useState(task.project_id ?? '');
+  const [sprintStart, setSprintStart] = useState<string | null>(task.sprint_start ?? null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,9 +30,10 @@ export function TaskUpdateModal({ isOpen, onClose, task }: TaskUpdateModalProps)
       setDescription(task.description ?? '');
       setAssignedTo(task.assigned_to ?? '');
       setProjectId(task.project_id ?? '');
+      setSprintStart(task.sprint_start ?? null);
       setError(null);
     }
-  }, [isOpen, task.task_id, task.title, task.description, task.assigned_to, task.project_id]);
+  }, [isOpen, task.task_id, task.title, task.description, task.assigned_to, task.project_id, task.sprint_start]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -117,6 +120,11 @@ export function TaskUpdateModal({ isOpen, onClose, task }: TaskUpdateModalProps)
                 </option>
               ))}
             </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-slate-900 dark:text-slate-200">Sprint</label>
+            <p className="mb-1 text-xs text-slate-500 dark:text-slate-400">Select a day to choose its week (Mon–Sun)</p>
+            <SprintCalendar value={sprintStart} onChange={setSprintStart} />
           </div>
           <div className="flex gap-2 pt-2">
             <button

@@ -8,6 +8,7 @@ import { useTheme } from '@/context/ThemeContext';
 import { useFindTask } from '@/context/FindTaskContext';
 import { ProjectModal } from './ProjectModal';
 import { CategoryModal } from './CategoryModal';
+import { formatSprintRange } from './SprintCalendar';
 
 export function Toolbar() {
   const router = useRouter();
@@ -29,6 +30,7 @@ export function Toolbar() {
   const deleteProject = useTodoStore((s) => s.deleteProject);
   const setFilterAssignedTo = useTodoStore((s) => s.setFilterAssignedTo);
   const setFilterProject = useTodoStore((s) => s.setFilterProject);
+  const setFilterSprint = useTodoStore((s) => s.setFilterSprint);
   const setSearchQuery = useTodoStore((s) => s.setSearchQuery);
   const filters = useTodoStore((s) => s.filters);
   const search = useTodoStore((s) => s.search);
@@ -40,6 +42,8 @@ export function Toolbar() {
 
   const tasks = useTodoStore((s) => s.tasks);
   const assignedOptions = [...new Set(tasks.map((t) => t.assigned_to).filter(Boolean))] as string[];
+  const sprintOptions = [...new Set(tasks.map((t) => t.sprint_start).filter(Boolean))] as string[];
+  sprintOptions.sort();
   const findTaskApi = useFindTask();
   const [findTaskQuery, setFindTaskQuery] = useState('');
   const [findTaskError, setFindTaskError] = useState<string | null>(null);
@@ -142,6 +146,20 @@ export function Toolbar() {
         ))}
       </select>
 
+      <select
+        value={filters.sprintStart}
+        onChange={(e) => setFilterSprint(e.target.value)}
+        className={`min-w-[100px] max-w-[180px] ${selectClass}`}
+        title="Filter by sprint"
+      >
+        <option value="">All sprints</option>
+        {sprintOptions.map((s) => (
+          <option key={s} value={s}>
+            {formatSprintRange(s)}
+          </option>
+        ))}
+      </select>
+
       <button
         ref={buttonRef}
         type="button"
@@ -195,6 +213,21 @@ export function Toolbar() {
             {assignedOptions.map((a) => (
               <option key={a} value={a}>
                 {a}
+              </option>
+            ))}
+          </select>
+          <div className="mt-2 text-xs font-semibold uppercase tracking-wide text-slate-900 dark:text-slate-200">
+            Filter by sprint
+          </div>
+          <select
+            value={filters.sprintStart}
+            onChange={(e) => setFilterSprint(e.target.value)}
+            className={`w-full ${selectClass}`}
+          >
+            <option value="">All sprints</option>
+            {sprintOptions.map((s) => (
+              <option key={s} value={s}>
+                {formatSprintRange(s)}
               </option>
             ))}
           </select>

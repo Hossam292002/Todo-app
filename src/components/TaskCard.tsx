@@ -7,6 +7,7 @@ import type { Task } from '@/lib/supabase';
 import type { CategoryColorKey } from '@/lib/supabase';
 import { TaskEditModal } from './TaskEditModal';
 import { TaskUpdateModal } from './TaskUpdateModal';
+import { formatSprintRange } from './SprintCalendar';
 import { useDropIndicator } from '@/context/DropIndicatorContext';
 import { useFindTask } from '@/context/FindTaskContext';
 import { useTodoStore } from '@/store/useTodoStore';
@@ -150,10 +151,13 @@ export const TaskCard = memo(function TaskCard({ task, categoryId, categoryColor
           {task.description && (
             <div className="mt-1 text-sm text-slate-800 line-clamp-2">{task.description}</div>
           )}
-          {(task.assigned_to || task.project_id) && (
+          {(task.assigned_to || task.project_id || task.sprint_start) && (
             <div className="mt-2 flex flex-wrap gap-1 text-xs text-slate-700">
               {task.assigned_to && <span className="rounded bg-slate-200/80 px-1.5 py-0.5 text-slate-800">{task.assigned_to}</span>}
               {task.project_id && <span className="rounded bg-slate-200/80 px-1.5 py-0.5 text-slate-800">{task.project_id}</span>}
+              {task.sprint_start && (
+                <span className="rounded bg-slate-200/80 px-1.5 py-0.5 text-slate-800" title="Sprint">Sprint: {formatSprintRange(task.sprint_start)}</span>
+              )}
             </div>
           )}
         </div>
