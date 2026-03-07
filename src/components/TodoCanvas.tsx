@@ -18,11 +18,11 @@ const MEASURING_CONFIG = {
 function distancePointToRect(
   px: number,
   py: number,
-  rect: { left: number; top: number; right: number; bottom: number },
+  rect: { left: number; top: number; right?: number; bottom?: number; width?: number; height?: number },
   expandPx: number = 0
 ): number {
-  const right = rect.right ?? rect.left + rect.width;
-  const bottom = rect.bottom ?? rect.top + rect.height;
+  const right = rect.right ?? rect.left + (rect.width ?? 0);
+  const bottom = rect.bottom ?? rect.top + (rect.height ?? 0);
   const left = rect.left - expandPx;
   const r = right + expandPx;
   const top = rect.top - expandPx;
