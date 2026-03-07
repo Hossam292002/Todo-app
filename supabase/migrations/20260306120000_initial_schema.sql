@@ -1,8 +1,5 @@
--- Supabase Schema for Todo Application
--- Run this in Supabase SQL Editor to create tables
-
 -- Projects table (unique Project ID)
-CREATE TABLE IF NOT EXISTS projects (
+CREATE TABLE projects (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
   description TEXT,
@@ -10,7 +7,7 @@ CREATE TABLE IF NOT EXISTS projects (
 );
 
 -- Categories table (columns on canvas)
-CREATE TABLE IF NOT EXISTS categories (
+CREATE TABLE categories (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
   position_x DOUBLE PRECISION DEFAULT 0,
@@ -20,7 +17,7 @@ CREATE TABLE IF NOT EXISTS categories (
 );
 
 -- Tasks table
-CREATE TABLE IF NOT EXISTS tasks (
+CREATE TABLE tasks (
   id SERIAL PRIMARY KEY,
   task_id INTEGER UNIQUE NOT NULL,
   title TEXT NOT NULL,
@@ -34,18 +31,12 @@ CREATE TABLE IF NOT EXISTS tasks (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Auto-increment task_id trigger
-CREATE OR REPLACE FUNCTION get_next_task_id()
-RETURNS INTEGER AS $$
-  SELECT COALESCE(MAX(task_id), 0) + 1 FROM tasks;
-$$ LANGUAGE SQL;
-
--- Enable RLS (Row Level Security)
+-- Enable Row Level Security
 ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
 ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tasks ENABLE ROW LEVEL SECURITY;
 
--- Allow all operations for anon (adjust for your auth setup)
+-- Policies for anon access
 CREATE POLICY "Allow all for projects" ON projects FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all for categories" ON categories FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all for tasks" ON tasks FOR ALL USING (true) WITH CHECK (true);

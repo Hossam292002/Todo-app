@@ -13,10 +13,10 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@supabase/supabase-js": "^2.98.0",
-    "@xyflow/react": "^12.10.1",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-zoom-pan-pinch": "^3.7.0",
     "zustand": "^5.0.11"
   },
   "devDependencies": {
@@ -26,6 +26,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "supabase": "^2.76.17",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
