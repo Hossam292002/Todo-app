@@ -3,33 +3,34 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useTodoStore } from '@/store/useTodoStore';
+import type { Task } from '@/lib/supabase';
 
-type TaskFormModalProps = {
+type TaskUpdateModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  categoryId: string;
+  task: Task;
 };
 
-export function TaskFormModal({ isOpen, onClose, categoryId }: TaskFormModalProps) {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [assignedTo, setAssignedTo] = useState('');
-  const [projectId, setProjectId] = useState('');
+export function TaskUpdateModal({ isOpen, onClose, task }: TaskUpdateModalProps) {
+  const [title, setTitle] = useState(task.title);
+  const [description, setDescription] = useState(task.description ?? '');
+  const [assignedTo, setAssignedTo] = useState(task.assigned_to ?? '');
+  const [projectId, setProjectId] = useState(task.project_id ?? '');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const addTask = useTodoStore((s) => s.addTask);
-  const getNextTaskId = useTodoStore((s) => s.getNextTaskId);
+
+  const updateTask = useTodoStore((s) => s.updateTask);
   const projects = useTodoStore((s) => s.projects);
 
   useEffect(() => {
     if (isOpen) {
-      setTitle('');
-      setDescription('');
-      setAssignedTo('');
-      setProjectId('');
+      setTitle(task.title);
+      setDescription(task.description ?? '');
+      setAssignedTo(task.assigned_to ?? '');
+      setProjectId(task.project_id ?? '');
       setError(null);
     }
-  }, [isOpen]);
+  }, [isOpen, task.task_id, task.title, task.description, task.assigned_to, task.project_id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,27 +38,15 @@ export function TaskFormModal({ isOpen, onClose, categoryId }: TaskFormModalProp
     setIsSubmitting(true);
     setError(null);
     try {
-      const taskId = await getNextTaskId();
-      await addTask({
-        task_id: taskId,
+      await updateTask(task.task_id, {
         title: title.trim(),
         description: description.trim() || undefined,
         assigned_to: assignedTo.trim() || undefined,
         project_id: projectId || undefined,
-        category_id: categoryId,
-        position_x: 0,
-        position_y: 0,
       });
       onClose();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to create task';
-      if (msg.toLowerCase().includes('user_id') || msg.toLowerCase().includes('schema cache')) {
-        setError(
-          'Database needs an update. From the project root run: npx supabase db push (or link the project first with npx supabase link).'
-        );
-      } else {
-        setError(msg);
-      }
+      setError(err instanceof Error ? err.message : 'Failed to update task');
     } finally {
       setIsSubmitting(false);
     }
@@ -66,12 +55,17 @@ export function TaskFormModal({ isOpen, onClose, categoryId }: TaskFormModalProp
   if (!isOpen) return null;
 
   const modal = (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm"
+      onClick={onClose}
+    >
       <div
         className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-900"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="mb-4 text-xl font-bold text-slate-800 dark:text-slate-100">Create Task</h2>
+        <h2 className="mb-4 text-xl font-bold text-slate-800 dark:text-slate-100">
+          Edit Task #{task.display_id ?? task.task_id}
+        </h2>
         {error && (
           <div className="mb-4 rounded-lg bg-rose-100 px-3 py-2 text-sm text-rose-800 dark:bg-rose-900/50 dark:text-rose-200">
             {error}
@@ -137,7 +131,7 @@ export function TaskFormModal({ isOpen, onClose, categoryId }: TaskFormModalProp
               disabled={isSubmitting}
               className="flex-1 rounded-lg bg-emerald-600 px-4 py-2 font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
             >
-              {isSubmitting ? 'Creating…' : 'Create Task'}
+              {isSubmitting ? 'Saving…' : 'Save'}
             </button>
           </div>
         </form>

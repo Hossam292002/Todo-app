@@ -85,7 +85,7 @@ export function Toolbar() {
           ref={panelRef}
           className="absolute left-0 top-full z-50 mt-2 min-w-[280px] rounded-xl border border-slate-200 bg-white p-3 shadow-xl dark:border-slate-600 dark:bg-slate-900"
         >
-          <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+          <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-700 dark:text-slate-400">
             Add
           </div>
           <div className="flex flex-col gap-2">
@@ -111,7 +111,7 @@ export function Toolbar() {
 
           <div className="my-3 h-px bg-slate-200 dark:bg-slate-600" />
 
-          <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+          <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-700 dark:text-slate-400">
             Filter & search
           </div>
           <div className="flex flex-col gap-2">
@@ -120,12 +120,12 @@ export function Toolbar() {
               placeholder="Search by title, description, ID..."
               value={search.query}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+              className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-400"
             />
             <select
               value={filters.assignedTo}
               onChange={(e) => setFilterAssignedTo(e.target.value)}
-              className="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-emerald-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+              className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-emerald-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
             >
               <option value="">All assignees</option>
               {assignedOptions.map((a) => (
@@ -137,7 +137,7 @@ export function Toolbar() {
             <select
               value={filters.projectId}
               onChange={(e) => setFilterProject(e.target.value)}
-              className="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-emerald-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+              className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-emerald-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
             >
               <option value="">All projects</option>
               {projects.map((p) => (
@@ -153,7 +153,7 @@ export function Toolbar() {
           <button
             type="button"
             onClick={handleLogout}
-            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-800 hover:bg-slate-100 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
           >
             Log out
           </button>

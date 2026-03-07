@@ -32,13 +32,16 @@ type TodoStore = {
   // Actions - Categories
   addCategory: (category: Omit<Category, 'created_at'>) => Promise<void>;
   deleteCategory: (id: string) => Promise<void>;
+  updateCategory: (id: string, updates: { name?: string; color?: import('@/lib/supabase').CategoryColorKey }) => Promise<void>;
   updateCategoryPosition: (id: string, position_x: number, position_y: number) => Promise<void>;
   updateCategoryWidth: (id: string, width: number) => Promise<void>;
+  swapCategoryPositions: (idA: string, idB: string) => Promise<void>;
   fetchCategories: () => Promise<void>;
   
   // Actions - Tasks
   addTask: (task: Omit<Task, 'id' | 'created_at' | 'updated_at' | 'display_id'>) => Promise<void>;
   deleteTask: (taskId: number) => Promise<void>;
+  updateTask: (taskId: number, updates: { title?: string; description?: string; assigned_to?: string; project_id?: string }) => Promise<void>;
   updateTaskPosition: (taskId: number, categoryId: string, position_x: number, position_y: number) => Promise<void>;
   updateTaskCategory: (taskId: number, newCategoryId: string) => Promise<void>;
   reorderTasksInCategory: (categoryId: string, taskIds: number[]) => Promise<void>;
@@ -96,12 +99,43 @@ export const useTodoStore = create<TodoStore>((set, get) => ({
     }));
   },
 
+  updateCategory: async (id, updates) => {
+    const { name, color } = updates;
+    const payload: { name?: string; color?: string } = {};
+    if (name !== undefined) payload.name = name;
+    if (color !== undefined) payload.color = color;
+    if (Object.keys(payload).length === 0) return;
+    await supabase.from('categories').update(payload).eq('id', id);
+    set((s) => ({
+      categories: s.categories.map((c) =>
+        c.id === id ? { ...c, ...payload } : c
+      ),
+    }));
+  },
+
   updateCategoryPosition: async (id, position_x, position_y) => {
     await supabase.from('categories').update({ position_x, position_y }).eq('id', id);
     set((s) => ({
       categories: s.categories.map((c) =>
         c.id === id ? { ...c, position_x, position_y } : c
       ),
+    }));
+  },
+
+  swapCategoryPositions: async (idA, idB) => {
+    if (idA === idB) return;
+    const categories = get().categories;
+    const catA = categories.find((c) => c.id === idA);
+    const catB = categories.find((c) => c.id === idB);
+    if (!catA || !catB) return;
+    await supabase.from('categories').update({ position_x: catB.position_x, position_y: catB.position_y }).eq('id', idA);
+    await supabase.from('categories').update({ position_x: catA.position_x, position_y: catA.position_y }).eq('id', idB);
+    set((s) => ({
+      categories: s.categories.map((c) => {
+        if (c.id === idA) return { ...c, position_x: catB.position_x, position_y: catB.position_y };
+        if (c.id === idB) return { ...c, position_x: catA.position_x, position_y: catA.position_y };
+        return c;
+      }),
     }));
   },
 
@@ -151,6 +185,23 @@ export const useTodoStore = create<TodoStore>((set, get) => ({
   deleteTask: async (taskId) => {
     await supabase.from('tasks').delete().eq('task_id', taskId);
     set((s) => ({ tasks: s.tasks.filter((t) => t.task_id !== taskId) }));
+  },
+
+  updateTask: async (taskId, updates) => {
+    const { title, description, assigned_to, project_id } = updates;
+    const payload: { title?: string; description?: string; assigned_to?: string; project_id?: string; updated_at: string } = {
+      updated_at: new Date().toISOString(),
+    };
+    if (title !== undefined) payload.title = title;
+    if (description !== undefined) payload.description = description;
+    if (assigned_to !== undefined) payload.assigned_to = assigned_to;
+    if (project_id !== undefined) payload.project_id = project_id;
+    await supabase.from('tasks').update(payload).eq('task_id', taskId);
+    set((s) => ({
+      tasks: s.tasks.map((t) =>
+        t.task_id === taskId ? { ...t, ...payload } : t
+      ),
+    }));
   },
 
   updateTaskPosition: async (taskId, categoryId, position_x, position_y) => {

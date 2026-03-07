@@ -378,11 +378,11 @@ function DragOverlayContent({ task, categoryId }: { task: import('@/lib/supabase
   const category = categories.find((c) => c.id === categoryId);
   const color = getTaskColorByKey(category?.color) ?? getTaskColor(task.task_id);
   return (
-    <div className={`cursor-grabbing w-[180px] rounded-lg border-2 ring-2 ring-emerald-400 p-3 shadow-2xl will-change-transform ${color.bg} ${color.border} ${color.darkBg} ${color.darkBorder}`}>
-      <div className={`text-xs font-mono ${color.accent} ${color.darkAccent}`}>{task.display_id ?? `#${task.task_id}`}</div>
+    <div className={`relative cursor-grabbing w-[180px] rounded-xl border border-slate-200/50 p-3 shadow-[0_4px_12px_rgba(0,0,0,0.08),0_8px_20px_rgba(0,0,0,0.06)] ring-2 ring-emerald-400 will-change-transform dark:border-slate-600/40 ${color.bg} ${color.darkBg}`}>
+      <div className={`text-xs font-mono ${color.accent} ${color.darkAccent}`}>#{task.display_id ?? task.task_id}</div>
       <div className={`font-medium ${color.accent} ${color.darkAccent}`}>{task.title}</div>
       {task.description && (
-        <div className="mt-1 text-sm text-slate-600 line-clamp-2 dark:text-slate-300">{task.description}</div>
+        <div className="mt-1 text-sm text-slate-700 line-clamp-2 dark:text-slate-300">{task.description}</div>
       )}
     </div>
   );

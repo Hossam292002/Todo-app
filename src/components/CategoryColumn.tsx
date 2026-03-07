@@ -5,6 +5,7 @@ import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
 import { TaskCard } from './TaskCard';
 import { TaskFormModal } from './TaskFormModal';
+import { CategoryEditModal } from './CategoryEditModal';
 import { useTodoStore } from '@/store/useTodoStore';
 
 const MIN_WIDTH = 200;
@@ -23,6 +24,7 @@ type CategoryColumnProps = {
 
 export const CategoryColumn = memo(function CategoryColumn({ categoryId, name, width = 280 }: CategoryColumnProps) {
   const [showTaskForm, setShowTaskForm] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const { setNodeRef } = useDroppable({ id: `category-drop-${categoryId}` });
   const { setNodeRef: setNewColRef } = useDroppable({ id: `category-newcol-${categoryId}` });
   const updateCategoryWidth = useTodoStore((s) => s.updateCategoryWidth);
@@ -97,9 +99,18 @@ export const CategoryColumn = memo(function CategoryColumn({ categoryId, name, w
       >
         {/* Category name over the frame (straddles top border) */}
         <div className="absolute left-4 top-0 flex -translate-y-1/2 items-center gap-2">
-          <span className="rounded-md border border-dashed border-slate-300 bg-white px-3 py-1 text-sm font-semibold text-slate-700 shadow-sm dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200">
+          <span className="rounded-md border border-dashed border-slate-300 bg-white px-3 py-1 text-sm font-semibold text-slate-800 shadow-sm dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200">
             {name}
           </span>
+          <button
+            onClick={() => setShowEditModal(true)}
+            className="rounded p-1.5 text-slate-500 opacity-80 hover:bg-slate-200 hover:opacity-100 dark:text-slate-400 dark:hover:bg-slate-700"
+            title="Edit category"
+          >
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828L18.172 7.172z" />
+            </svg>
+          </button>
           <button
             onClick={handleDeleteCategory}
             className="rounded p-1.5 text-slate-500 opacity-80 hover:bg-slate-200 hover:opacity-100 dark:text-slate-400 dark:hover:bg-slate-700"
@@ -150,6 +161,13 @@ export const CategoryColumn = memo(function CategoryColumn({ categoryId, name, w
         </button>
       </div>
       <TaskFormModal isOpen={showTaskForm} onClose={() => setShowTaskForm(false)} categoryId={categoryId} />
+      {category && (
+        <CategoryEditModal
+          isOpen={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          category={category}
+        />
+      )}
     </>
   );
 });

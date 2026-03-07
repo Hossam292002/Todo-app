@@ -6,6 +6,7 @@ import { CSS } from '@dnd-kit/utilities';
 import type { Task } from '@/lib/supabase';
 import type { CategoryColorKey } from '@/lib/supabase';
 import { TaskEditModal } from './TaskEditModal';
+import { TaskUpdateModal } from './TaskUpdateModal';
 import { useDropIndicator } from '@/context/DropIndicatorContext';
 import { useTodoStore } from '@/store/useTodoStore';
 
@@ -54,7 +55,8 @@ type TaskCardProps = {
 };
 
 export const TaskCard = memo(function TaskCard({ task, categoryId, categoryColor }: TaskCardProps) {
-  const [showEdit, setShowEdit] = useState(false);
+  const [showMoveModal, setShowMoveModal] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
   const deleteTask = useTodoStore((s) => s.deleteTask);
   const { overId, direction } = useDropIndicator();
   const isDropTarget = overId === `task-${task.task_id}`;
@@ -84,9 +86,9 @@ export const TaskCard = memo(function TaskCard({ task, categoryId, categoryColor
       <div
         ref={setNodeRef}
         style={style}
-        className={`task-card nodrag nopan group relative w-[180px] shrink-0 cursor-grab rounded-lg border-2 p-3 shadow-sm transition-shadow hover:shadow-md active:cursor-grabbing ${color.bg} ${color.border} ${color.darkBg} ${color.darkBorder} ${
+        className={`task-card nodrag nopan group relative w-[180px] shrink-0 cursor-grab rounded-xl border border-slate-200/50 p-3 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:cursor-grabbing dark:border-slate-600/40 ${
           isDragging ? 'opacity-0' : ''
-        }`}
+        } ${color.bg} ${color.darkBg} shadow-[0_2px_6px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08),0_8px_20px_rgba(0,0,0,0.06)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.2)] dark:hover:shadow-[0_6px_16px_rgba(0,0,0,0.25)]`}
       >
         {isDropTarget && direction && (
           <div
@@ -95,13 +97,13 @@ export const TaskCard = memo(function TaskCard({ task, categoryId, categoryColor
           />
         )}
         <div {...listeners} {...attributes} className="min-h-[2rem]">
-          <div className={`text-xs font-mono ${color.accent} ${color.darkAccent}`}>{task.display_id ?? `#${task.task_id}`}</div>
+          <div className={`text-xs font-mono ${color.accent} ${color.darkAccent}`}>#{task.display_id ?? task.task_id}</div>
           <div className={`font-medium ${color.accent} ${color.darkAccent}`}>{task.title}</div>
           {task.description && (
-            <div className="mt-1 text-sm text-slate-600 line-clamp-2 dark:text-slate-300">{task.description}</div>
+            <div className="mt-1 text-sm text-slate-700 line-clamp-2 dark:text-slate-300">{task.description}</div>
           )}
           {(task.assigned_to || task.project_id) && (
-            <div className="mt-2 flex flex-wrap gap-1 text-xs text-slate-600 dark:text-slate-400">
+            <div className="mt-2 flex flex-wrap gap-1 text-xs text-slate-700 dark:text-slate-400">
               {task.assigned_to && <span className="rounded bg-white/50 px-1.5 py-0.5 dark:bg-black/20">{task.assigned_to}</span>}
               {task.project_id && <span className="rounded bg-white/50 px-1.5 py-0.5 dark:bg-black/20">{task.project_id}</span>}
             </div>
@@ -109,9 +111,27 @@ export const TaskCard = memo(function TaskCard({ task, categoryId, categoryColor
         </div>
         <div className="absolute right-2 top-2 flex gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
           <button
+            onClick={(e) => { e.stopPropagation(); setShowUpdateModal(true); }}
+            className="rounded p-1 text-slate-500 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-slate-600 dark:hover:text-slate-200"
+            title="Edit task"
+          >
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828L18.172 7.172z" />
+            </svg>
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); setShowMoveModal(true); }}
+            className="rounded p-1 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-600"
+            title="Move to another category"
+          >
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+            </svg>
+          </button>
+          <button
             onClick={(e) => {
               e.stopPropagation();
-              if (confirm(`Delete task ${task.display_id ?? '#' + task.task_id} "${task.title}"?`)) {
+              if (confirm(`Delete task #${task.display_id ?? task.task_id} "${task.title}"?`)) {
                 deleteTask(task.task_id);
               }
             }}
@@ -122,18 +142,10 @@ export const TaskCard = memo(function TaskCard({ task, categoryId, categoryColor
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
           </button>
-          <button
-            onClick={(e) => { e.stopPropagation(); setShowEdit(true); }}
-            className="rounded p-1 hover:bg-slate-200 dark:hover:bg-slate-600"
-            title="Move to another category"
-          >
-            <svg className="h-4 w-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-            </svg>
-          </button>
         </div>
       </div>
-      <TaskEditModal isOpen={showEdit} onClose={() => setShowEdit(false)} task={task} />
+      <TaskUpdateModal isOpen={showUpdateModal} onClose={() => setShowUpdateModal(false)} task={task} />
+      <TaskEditModal isOpen={showMoveModal} onClose={() => setShowMoveModal(false)} task={task} />
     </>
   );
 });
