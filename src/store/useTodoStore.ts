@@ -6,6 +6,9 @@ function escapeRegExp(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+/** Special filter value: show only tasks that have no project assigned */
+export const NO_PROJECT_FILTER = '__none__';
+
 type FilterState = {
   assignedTo: string;
   projectId: string;
@@ -27,6 +30,7 @@ type TodoStore = {
   
   // Actions - Projects
   addProject: (project: Omit<Project, 'created_at'>) => Promise<void>;
+  deleteProject: (id: string) => Promise<void>;
   fetchProjects: () => Promise<void>;
   
   // Actions - Categories
@@ -76,6 +80,16 @@ export const useTodoStore = create<TodoStore>((set, get) => ({
     if (!user) return;
     const { error } = await supabase.from('projects').insert({ ...project, user_id: user.id });
     if (!error) await get().fetchProjects();
+  },
+
+  deleteProject: async (id) => {
+    await supabase.from('tasks').update({ project_id: null }).eq('project_id', id);
+    await supabase.from('projects').delete().eq('id', id);
+    set((s) => ({
+      projects: s.projects.filter((p) => p.id !== id),
+      tasks: s.tasks.map((t) => (t.project_id === id ? { ...t, project_id: undefined } : t)),
+      filters: s.filters.projectId === id ? { ...s.filters, projectId: '' } : s.filters,
+    }));
   },
 
   fetchProjects: async () => {
@@ -421,7 +435,13 @@ export const useTodoStore = create<TodoStore>((set, get) => ({
     const { tasks, filters, search } = get();
     let result = [...tasks];
     if (filters.assignedTo) result = result.filter((t) => t.assigned_to === filters.assignedTo);
-    if (filters.projectId) result = result.filter((t) => t.project_id === filters.projectId);
+    if (filters.projectId) {
+      if (filters.projectId === NO_PROJECT_FILTER) {
+        result = result.filter((t) => !t.project_id);
+      } else {
+        result = result.filter((t) => t.project_id === filters.projectId);
+      }
+    }
     if (search.query) {
       const q = search.query.toLowerCase();
       result = result.filter(

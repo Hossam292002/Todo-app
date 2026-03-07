@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useTodoStore } from '@/store/useTodoStore';
+import { useTodoStore, NO_PROJECT_FILTER } from '@/store/useTodoStore';
 import { supabase } from '@/lib/supabase';
 import { useTheme } from '@/context/ThemeContext';
 import { ProjectModal } from './ProjectModal';
@@ -25,11 +25,17 @@ export function Toolbar() {
   };
 
   const projects = useTodoStore((s) => s.projects);
+  const deleteProject = useTodoStore((s) => s.deleteProject);
   const setFilterAssignedTo = useTodoStore((s) => s.setFilterAssignedTo);
   const setFilterProject = useTodoStore((s) => s.setFilterProject);
   const setSearchQuery = useTodoStore((s) => s.setSearchQuery);
   const filters = useTodoStore((s) => s.filters);
   const search = useTodoStore((s) => s.search);
+
+  const handleDeleteProject = async (projectId: string, projectName: string) => {
+    if (!confirm(`Delete project "${projectName}"? Tasks in this project will be unassigned from the project.`)) return;
+    await deleteProject(projectId);
+  };
 
   const tasks = useTodoStore((s) => s.tasks);
   const assignedOptions = [...new Set(tasks.map((t) => t.assigned_to).filter(Boolean))] as string[];
@@ -140,12 +146,38 @@ export function Toolbar() {
               className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-emerald-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
             >
               <option value="">All projects</option>
+              <option value={NO_PROJECT_FILTER}>No project</option>
               {projects.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name}
                 </option>
               ))}
             </select>
+            {projects.length > 0 && (
+              <div className="mt-2">
+                <div className="mb-1 text-xs font-medium text-slate-500 dark:text-slate-400">Delete project</div>
+                <div className="max-h-48 space-y-1 overflow-y-auto rounded-lg pr-0.5">
+                  {projects.map((p) => (
+                    <div
+                      key={p.id}
+                      className="flex items-center justify-between gap-2 rounded-lg border border-slate-200 bg-slate-50/80 px-2 py-1.5 dark:border-slate-600 dark:bg-slate-800/80"
+                    >
+                      <span className="truncate text-sm text-slate-800 dark:text-slate-200">{p.name}</span>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteProject(p.id, p.name)}
+                        className="shrink-0 rounded p-1 text-slate-400 hover:bg-rose-100 hover:text-rose-600 dark:hover:bg-rose-900/30 dark:hover:text-rose-400"
+                        title={`Delete project ${p.name}`}
+                      >
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="my-3 h-px bg-slate-200 dark:bg-slate-600" />

@@ -6,7 +6,7 @@ import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
 import { TaskCard } from './TaskCard';
 import { TaskFormModal } from './TaskFormModal';
 import { CategoryEditModal } from './CategoryEditModal';
-import { useTodoStore } from '@/store/useTodoStore';
+import { useTodoStore, NO_PROJECT_FILTER } from '@/store/useTodoStore';
 
 const MIN_WIDTH = 200;
 const TASK_WIDTH = 180;
@@ -40,7 +40,11 @@ export const CategoryColumn = memo(function CategoryColumn({ categoryId, name, w
   const filteredTasks = tasks
     .filter((t) => t.category_id === categoryId)
     .filter((t) => !filters.assignedTo || t.assigned_to === filters.assignedTo)
-    .filter((t) => !filters.projectId || t.project_id === filters.projectId)
+    .filter((t) => {
+      if (!filters.projectId) return true;
+      if (filters.projectId === NO_PROJECT_FILTER) return !t.project_id;
+      return t.project_id === filters.projectId;
+    })
     .filter(
       (t) =>
         !search.query ||
