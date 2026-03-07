@@ -8,6 +8,7 @@ import type { CategoryColorKey } from '@/lib/supabase';
 import { TaskEditModal } from './TaskEditModal';
 import { TaskUpdateModal } from './TaskUpdateModal';
 import { useDropIndicator } from '@/context/DropIndicatorContext';
+import { useFindTask } from '@/context/FindTaskContext';
 import { useTodoStore } from '@/store/useTodoStore';
 
 export const CATEGORY_COLOR_OPTIONS: {
@@ -94,6 +95,8 @@ export const TaskCard = memo(function TaskCard({ task, categoryId, categoryColor
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const deleteTask = useTodoStore((s) => s.deleteTask);
   const relativeTime = useRelativeTime(task.created_at);
+  const findTaskApi = useFindTask();
+  const isHighlighted = findTaskApi?.highlightTaskId === task.task_id;
   const { overId, direction } = useDropIndicator();
   const isDropTarget = overId === `task-${task.task_id}`;
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -122,9 +125,10 @@ export const TaskCard = memo(function TaskCard({ task, categoryId, categoryColor
       <div
         ref={setNodeRef}
         style={style}
+        data-find-task-id={task.task_id}
         className={`task-card nodrag nopan group relative w-[180px] shrink-0 cursor-grab rounded-xl border border-slate-200/50 p-3 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:cursor-grabbing dark:border-slate-600/40 ${
           isDragging ? 'opacity-0' : ''
-        } ${color.bg} ${color.darkBg} shadow-[0_2px_6px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08),0_8px_20px_rgba(0,0,0,0.06)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.2)] dark:hover:shadow-[0_6px_16px_rgba(0,0,0,0.25)]`}
+        } ${isHighlighted ? 'ring-2 ring-emerald-400 animate-pulse dark:ring-emerald-500' : ''} ${color.bg} ${color.darkBg} shadow-[0_2px_6px_rgba(0,0,0,0.06),0_4px_12px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08),0_8px_20px_rgba(0,0,0,0.06)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.2)] dark:hover:shadow-[0_6px_16px_rgba(0,0,0,0.25)]`}
       >
         {isDropTarget && direction && (
           <div

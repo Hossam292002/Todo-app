@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { FindTaskProvider } from '@/context/FindTaskContext';
 import { TodoCanvas } from '@/components/TodoCanvas';
 
 export default function Home() {
@@ -30,7 +31,9 @@ export default function Home() {
   return (
     <main className="flex h-screen flex-col bg-slate-100 dark:bg-slate-950">
       <div className="flex-1 overflow-hidden">
-        <TodoCanvas />
+        <FindTaskProvider>
+          <TodoCanvas />
+        </FindTaskProvider>
       </div>
     </main>
   );

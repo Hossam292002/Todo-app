@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useTodoStore, NO_PROJECT_FILTER } from '@/store/useTodoStore';
 import { supabase } from '@/lib/supabase';
 import { useTheme } from '@/context/ThemeContext';
+import { useFindTask } from '@/context/FindTaskContext';
 import { ProjectModal } from './ProjectModal';
 import { CategoryModal } from './CategoryModal';
 
@@ -39,6 +40,20 @@ export function Toolbar() {
 
   const tasks = useTodoStore((s) => s.tasks);
   const assignedOptions = [...new Set(tasks.map((t) => t.assigned_to).filter(Boolean))] as string[];
+  const findTaskApi = useFindTask();
+  const [findTaskQuery, setFindTaskQuery] = useState('');
+  const [findTaskError, setFindTaskError] = useState<string | null>(null);
+
+  const handleFindTask = () => {
+    setFindTaskError(null);
+    const result = findTaskApi?.findTask(findTaskQuery);
+    if (result?.found) {
+      setFindTaskQuery('');
+      setOpen(false);
+    } else if (result?.error) {
+      setFindTaskError(result.error);
+    }
+  };
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -117,6 +132,29 @@ export function Toolbar() {
 
           <div className="my-3 h-px bg-slate-200 dark:bg-slate-600" />
 
+          <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-700 dark:text-slate-400">
+            Find Task
+          </div>
+          <div className="mb-2 flex gap-2">
+            <input
+              type="text"
+              value={findTaskQuery}
+              onChange={(e) => { setFindTaskQuery(e.target.value); setFindTaskError(null); }}
+              onKeyDown={(e) => e.key === 'Enter' && handleFindTask()}
+              placeholder="e.g. AS-3, GEN-5"
+              className="flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-400"
+            />
+            <button
+              type="button"
+              onClick={handleFindTask}
+              className="shrink-0 rounded-lg bg-slate-600 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700"
+            >
+              Go
+            </button>
+          </div>
+          {findTaskError && (
+            <p className="mb-2 text-xs text-rose-600 dark:text-rose-400">{findTaskError}</p>
+          )}
           <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-700 dark:text-slate-400">
             Filter & search
           </div>

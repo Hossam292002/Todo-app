@@ -9,6 +9,7 @@ import { CategoryColumn } from './CategoryColumn';
 import { TaskCard, getTaskColor, getTaskColorByKey, getRelativeTime } from './TaskCard';
 import { Toolbar } from './Toolbar';
 import { DropIndicatorContext, type DropDirection } from '@/context/DropIndicatorContext';
+import { useFindTask } from '@/context/FindTaskContext';
 
 const MEASURING_CONFIG = {
   droppable: { strategy: MeasuringStrategy.BeforeDragging, frequency: MeasuringFrequency.Optimized },
@@ -298,6 +299,14 @@ export function TodoCanvas() {
     [categories]
   );
 
+  const findTaskApi = useFindTask();
+  const handleTransformInit = useCallback(
+    (ref: import('react-zoom-pan-pinch').ReactZoomPanPinchRef) => {
+      findTaskApi?.registerTransformRef(ref as import('react-zoom-pan-pinch').ReactZoomPanPinchContentRef);
+    },
+    [findTaskApi]
+  );
+
   return (
     <div className="relative h-full w-full overflow-hidden">
       <div className="absolute left-4 top-4 z-10">
@@ -321,6 +330,7 @@ export function TodoCanvas() {
           limitToBounds={false}
           smooth={true}
           disabled={!!activeTask}
+          onInit={handleTransformInit}
           panning={{
             allowLeftClickPan: true,
             allowMiddleClickPan: true,
