@@ -220,7 +220,7 @@ export const TaskCard = memo(function TaskCard({ task, categoryId, categoryColor
           role="dialog"
           aria-modal="true"
           aria-label="View attachment"
-          className="fixed inset-0 z-[99999] flex items-center justify-center bg-black"
+          className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/30 backdrop-blur-xl"
           style={{ width: '100vw', height: '100vh', left: 0, top: 0, right: 0, bottom: 0 }}
           onClick={() => setShowImageModal(false)}
         >
