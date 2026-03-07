@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase';
-import type { Project, Category, Task } from '@/lib/supabase';
+import type { Project, Category, Task, CategoryColorKey } from '@/lib/supabase';
 
 function escapeRegExp(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -101,7 +101,7 @@ export const useTodoStore = create<TodoStore>((set, get) => ({
 
   updateCategory: async (id, updates) => {
     const { name, color } = updates;
-    const payload: { name?: string; color?: string } = {};
+    const payload: { name?: string; color?: CategoryColorKey } = {};
     if (name !== undefined) payload.name = name;
     if (color !== undefined) payload.color = color;
     if (Object.keys(payload).length === 0) return;
