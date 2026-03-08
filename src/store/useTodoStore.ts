@@ -68,6 +68,10 @@ type TodoStore = {
   
   // Computed
   getFilteredTasks: () => Task[];
+
+  // UI: open create-task form for a category (e.g. from AI chat)
+  openCreateTaskCategoryId: string | null;
+  setOpenCreateTaskCategoryId: (id: string | null) => void;
 };
 
 export const useTodoStore = create<TodoStore>((set, get) => ({
@@ -76,6 +80,8 @@ export const useTodoStore = create<TodoStore>((set, get) => ({
   tasks: [],
   filters: { assignedTo: '', projectId: '', sprintStart: '' },
   search: { query: '' },
+  openCreateTaskCategoryId: null,
+  setOpenCreateTaskCategoryId: (id) => set({ openCreateTaskCategoryId: id }),
 
   addProject: async (project) => {
     const { data: { user } } = await supabase.auth.getUser();

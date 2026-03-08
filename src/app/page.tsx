@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { FindTaskProvider } from '@/context/FindTaskContext';
 import { TodoCanvas } from '@/components/TodoCanvas';
+import { AIChatPanel } from '@/components/AIChatPanel';
 
 export default function Home() {
   const router = useRouter();
@@ -33,6 +34,7 @@ export default function Home() {
       <div className="flex-1 overflow-hidden">
         <FindTaskProvider>
           <TodoCanvas />
+          <AIChatPanel />
         </FindTaskProvider>
       </div>
     </main>

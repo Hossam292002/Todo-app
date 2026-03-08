@@ -36,6 +36,8 @@ export const CategoryColumn = memo(function CategoryColumn({ categoryId, name, w
   const categoryTasks = tasks.filter((t) => t.category_id === categoryId);
   const filters = useTodoStore((s) => s.filters);
   const search = useTodoStore((s) => s.search);
+  const openCreateTaskCategoryId = useTodoStore((s) => s.openCreateTaskCategoryId);
+  const setOpenCreateTaskCategoryId = useTodoStore((s) => s.setOpenCreateTaskCategoryId);
 
   const filteredTasks = tasks
     .filter((t) => t.category_id === categoryId)
@@ -45,6 +47,7 @@ export const CategoryColumn = memo(function CategoryColumn({ categoryId, name, w
       if (filters.projectId === NO_PROJECT_FILTER) return !t.project_id;
       return t.project_id === filters.projectId;
     })
+    .filter((t) => !filters.sprintStart || (t.sprint_start ?? '') === filters.sprintStart)
     .filter(
       (t) =>
         !search.query ||
@@ -94,6 +97,13 @@ export const CategoryColumn = memo(function CategoryColumn({ categoryId, name, w
       updateCategoryWidth(categoryId, Math.ceil(neededWidth));
     }
   }, [categoryId, neededWidth, width, updateCategoryWidth]);
+
+  useEffect(() => {
+    if (openCreateTaskCategoryId === categoryId) {
+      setShowTaskForm(true);
+      setOpenCreateTaskCategoryId(null);
+    }
+  }, [openCreateTaskCategoryId, categoryId, setOpenCreateTaskCategoryId]);
 
   return (
     <>
