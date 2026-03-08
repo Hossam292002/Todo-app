@@ -424,11 +424,9 @@ export const useTodoStore = create<TodoStore>((set, get) => ({
       projectId && projectId.trim()
         ? (projectId.trim().replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 20) || 'GEN')
         : 'GEN';
-    const { data: tasks } = await supabase
-      .from('tasks')
-      .select('display_id')
-      .or(projectId && projectId.trim() ? `project_id.eq.${projectId.trim()}` : 'project_id.is.null');
-    const re = new RegExp(`^${escapeRegExp(prefix)}-(\\d+)$`);
+    // Unique constraint is (user_id, display_id) — consider all user's tasks, not just same project
+    const { data: tasks } = await supabase.from('tasks').select('display_id');
+    const re = new RegExp(`^${escapeRegExp(prefix)}-(\\d+)$`, 'i');
     let maxN = 0;
     for (const t of tasks || []) {
       const m = (t.display_id || '').match(re);

@@ -77,9 +77,14 @@ export function TaskFormModal({ isOpen, onClose, categoryId }: TaskFormModalProp
       onClose();
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to create task';
-      if (msg.toLowerCase().includes('user_id') || msg.toLowerCase().includes('schema cache')) {
+      const lower = msg.toLowerCase();
+      const isSchemaError = lower.includes('user_id') || lower.includes('schema cache') || (lower.includes('could not find the') && lower.includes('column'));
+      const isDuplicateKey = lower.includes('duplicate key') && lower.includes('unique constraint');
+      if (isDuplicateKey) {
+        setError('A task with this ID already exists. Try again or refresh the page.');
+      } else if (isSchemaError) {
         setError(
-          'Database needs an update. From the project root run: npx supabase db push (or link the project first with npx supabase link).'
+          'Database needs an update. Open Supabase Dashboard → the project in your .env.local → SQL Editor → New query. Copy all of supabase/APPLY_TO_PROJECT.sql into the editor and Run. Then try again.'
         );
       } else {
         setError(msg);

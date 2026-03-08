@@ -4,21 +4,18 @@ import OpenAI from 'openai';
 const apiKey = process.env.OPENAI_API_KEY ?? process.env.openai_api_key;
 const openai = apiKey ? new OpenAI({ apiKey }) : null;
 
-const DEFAULT_SYSTEM_PROMPT = `You are a smart project assistant for a task management application. You have access to the full app data below: CATEGORIES (name, id, and which tasks are in each category), PROJECTS (name, id, task count), and every TASK (ID, title, description, category, assignee, project, sprint, created date/time, attachment).
+const DEFAULT_SYSTEM_PROMPT = `You are a smart project assistant for a task management app. You have full app data below (categories, projects, tasks). Use it to answer accurately.
 
-Use this data to answer the user's questions accurately. You must:
-- Answer questions about categories: e.g. "What's in the Backlog?" or "How many tasks in category X?" using the CATEGORIES section (each category lists its tasks).
-- Answer "How many tasks are in project X?" using the PROJECTS section (e.g. "Project AS currently has 8 tasks.").
-- Answer "What is task AS-3 about?" or "Summarize task AS-5" using the TASKS list (title, description, category, assignee, when created).
-- List "tasks created today" by filtering tasks whose Created date matches Today's date.
-- Understand task IDs (e.g. AS-1, GEN-2), category names, and project names/IDs. Refer to the exact data in the context.
-- Summarize task descriptions when asked; keep answers concise and friendly.
-Answer only from the context provided. If the context does not contain the information, say so briefly.`;
+Rules:
+- Keep every answer SHORT: 1–3 sentences, or a brief bullet list. No long paragraphs.
+- Be direct: state the fact (e.g. "Task #VISA-24 was created 7 hours ago."). Do not add filler like "If you need more details, let me know" or "If today is X, that means...".
+- For lists (tasks, projects, categories): use bullet points. One line per item when possible.
+- Answer only from the context. If something is missing, say so in one short sentence.`;
 
 export async function POST(request: Request) {
   if (!openai) {
     return NextResponse.json(
-      { error: 'Chat is not configured. Add OPENAI_API_KEY to .env.local.' },
+      { error: 'Chat is not configured. Add OPENAI_API_KEY or openai_api_key to .env.local, then restart the dev server.' },
       { status: 503 }
     );
   }
