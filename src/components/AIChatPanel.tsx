@@ -120,8 +120,13 @@ export function AIChatPanel() {
     const trimmed = text.trim();
 
     // Find task by ID (e.g. "find AS-1", "go to GEN-2", "show task AS-1")
-    const findMatch = trimmed.match(/(?:find|go to|show|locate)\s+(?:task\s+)?([A-Za-z0-9_-]+)/i) || (lower.match(/^([a-z0-9_-]+)$/) && trimmed.length <= 20);
-    const taskId = findMatch ? (findMatch[1] ?? trimmed) : null;
+    let taskId: string | null = null;
+    const findMatchVerb = trimmed.match(/(?:find|go to|show|locate)\s+(?:task\s+)?([A-Za-z0-9_-]+)/i);
+    if (findMatchVerb) taskId = findMatchVerb[1] ?? trimmed;
+    else {
+      const findMatchIdOnly = lower.match(/^([a-z0-9_-]+)$/);
+      if (findMatchIdOnly && trimmed.length <= 20) taskId = findMatchIdOnly[1] ?? trimmed;
+    }
     if (taskId && findTaskApi) {
       const result = findTaskApi.findTask(taskId.trim());
       if (result.found) return `Found and focused task #${taskId}.`;
