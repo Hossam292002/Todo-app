@@ -307,8 +307,17 @@ export function TodoCanvas() {
     [findTaskApi]
   );
 
+  const handleCanvasClick = useCallback((e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    const isInteractive = target.closest?.('input, textarea, select, button');
+    const active = document.activeElement;
+    if (!isInteractive && active instanceof HTMLElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(active.tagName)) {
+      active.blur();
+    }
+  }, []);
+
   return (
-    <div className="relative h-full w-full overflow-hidden">
+    <div className="relative h-full w-full overflow-hidden" onClick={handleCanvasClick}>
       <div className="absolute left-4 top-4 z-10">
         <Toolbar />
       </div>
